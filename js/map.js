@@ -6,11 +6,11 @@ function initMap() {
     // 创建地图实例
     map = L.map('map').setView([39.9042, 116.4074], 12); // 默认北京坐标
     
-    // 添加底图图层（CartoDB Positron）
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 19
+    // 添加底图图层（高德地图，支持GCJ-02坐标系）
+    L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {
+        subdomains: '1234',
+        maxZoom: 20,
+        attribution: '高德地图'
     }).addTo(map);
     
     console.log('地图初始化完成');

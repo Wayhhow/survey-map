@@ -1,4 +1,4 @@
-# 勘测线路地图
+# 橙光队无障碍督导路线可视化
 
 GitHub Pages 托管的地图网站，显示 Google My Maps 导出的线路，按类型区分颜色。
 
@@ -97,12 +97,14 @@ node convert-kml.js input.kml data/routes.geojson
   "已勘测": {
     "color": "#4CAF50",
     "weight": 4,
-    "opacity": 0.8
+    "opacity": 0.8,
+    "description": "已完成现场勘测的线路"
   },
-  "未勘测": {
+  "待勘测": {
     "color": "#9E9E9E",
-    "weight": 3,
-    "opacity": 0.6
+    "weight": 4,
+    "opacity": 0.8,
+    "description": "待勘测的线路"
   }
 }
 ```
@@ -113,6 +115,7 @@ node convert-kml.js input.kml data/routes.geojson
 - **线路点击**: 点击线路显示详细信息（名称、类型、长度）
 - **统计面板**: 显示总线路长度和各类型线路长度
 - **自动适配**: 地图会自动调整视图以显示所有线路
+- **标题显示**: 地图顶部显示项目标题"橙光队无障碍督导路线可视化"
 
 ## 开发指南
 
@@ -143,4 +146,4 @@ node convert-kml.js input.kml data/routes.geojson
 - 确保 Google My Maps 导出的 KML 文件包含线路数据
 - 转换后的 GeoJSON 文件应放在 `data/routes.geojson` 位置
 - 线路数据中的 `properties.type` 字段用于区分线路类型
-- 如果没有指定类型，默认显示为 "未勘测" 类型
+- 如果没有指定类型，默认显示为 "待勘测" 类型
