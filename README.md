@@ -150,4 +150,8 @@ node convert-kml.js input.kml data/routes.geojson
 
 ## Star History
 
-<iframe style="width:100%;height:auto;min-width:600px;min-height:400px;" src="https://www.star-history.com/?repos=Wayhhow%2Fsurvey-map&type=date&legend=top-left" frameBorder="0"></iframe>
+### 星标历史图表
+
+![Star History Chart](https://api.star-history.com/svg?repos=Wayhhow/survey-map&type=date)
+
+> 注：SVG图片会自动更新，每次加载时都会显示最新的星标数据
