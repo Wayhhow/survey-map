@@ -4,35 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>星标历史 - 橙光队无障碍督导路线可视化</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 0;
+            padding: 20px;
             background-color: #f5f5f5;
         }
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
             background-color: white;
-            padding: 20px;
+            padding: 30px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         h1 {
             text-align: center;
             color: #333;
-        }
-        .chart-container {
-            position: relative;
-            height: 400px;
-            margin: 20px 0;
+            margin-bottom: 30px;
         }
         .stats {
             display: flex;
             justify-content: space-around;
             margin: 20px 0;
-            padding: 15px;
+            padding: 20px;
             background-color: #f9f9f9;
             border-radius: 8px;
         }
@@ -48,11 +44,29 @@
             font-size: 14px;
             color: #666;
         }
+        .chart-container {
+            width: 100%;
+            height: 500px;
+            margin: 20px 0;
+        }
+        .info {
+            text-align: center;
+            margin: 20px 0;
+            color: #666;
+        }
         .footer {
             text-align: center;
             margin-top: 30px;
-            color: #666;
+            color: #999;
             font-size: 14px;
+        }
+        .note {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
         }
     </style>
 </head>
@@ -63,11 +77,11 @@
         <div class="stats">
             <div class="stat-item">
                 <div class="stat-value" id="total-stars">加载中...</div>
-                <div class="stat-label">总星标数</div>
+                <div class="stat-label">当前星标数</div>
             </div>
             <div class="stat-item">
-                <div class="stat-value" id="star-growth">加载中...</div>
-                <div class="stat-label">近30天增长</div>
+                <div class="stat-value" id="repo-name">Wayhhow/survey-map</div>
+                <div class="stat-label">仓库名称</div>
             </div>
             <div class="stat-item">
                 <div class="stat-value" id="last-update">加载中...</div>
@@ -75,12 +89,22 @@
             </div>
         </div>
         
+        <div class="note">
+            <strong>说明：</strong>Star-History 工具的数据可能存在延迟或缓存问题。以下显示的当前星标数是直接从 GitHub API 获取的实时数据，更准确反映实际情况。
+        </div>
+        
+        <div class="info">
+            <p>使用 Star-History 工具可视化 GitHub 星标数据</p>
+        </div>
+        
         <div class="chart-container">
-            <canvas id="starChart"></canvas>
+            <!-- Star-History 嵌入代码 -->
+            <iframe src="https://star-history.com/#Wayhhow/survey-map&Date" width="100%" height="100%" frameborder="0"></iframe>
         </div>
         
         <div class="footer">
-            <p>数据来源: GitHub API | 最后更新: <span id="update-time"></span></p>
+            <p>数据来源: Star-History (历史趋势) | GitHub API (实时星标数) | 最后更新: <span id="update-time"></span></p>
+            <p><a href="https://star-history.com" target="_blank">Star-History - GitHub 星标历史可视化工具</a></p>
         </div>
     </div>
     
@@ -88,58 +112,6 @@
         // 仓库信息
         const owner = 'Wayhhow';
         const repo = 'survey-map';
-        
-        // 初始化图表
-        const ctx = document.getElementById('starChart').getContext('2d');
-        const starChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: '星标数',
-                    data: [],
-                    borderColor: '#4CAF50',
-                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: '星标数量变化趋势',
-                        font: {
-                            size: 16
-                        }
-                    },
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false
-                    }
-                },
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: '日期'
-                        }
-                    },
-                    y: {
-                        title: {
-                            display: true,
-                            text: '星标数'
-                        },
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
         
         // 获取当前星标数
         async function getCurrentStars() {
@@ -150,51 +122,24 @@
                 return data.stargazers_count;
             } catch (error) {
                 console.error('获取星标数失败:', error);
-                return 0;
+                return '无法获取';
             }
-        }
-        
-        // 模拟星标历史数据（实际项目中可以通过GitHub API或缓存获取）
-        function generateMockStarHistory() {
-            const now = new Date();
-            const labels = [];
-            const data = [];
-            
-            // 生成过去30天的数据
-            for (let i = 29; i >= 0; i--) {
-                const date = new Date(now);
-                date.setDate(date.getDate() - i);
-                labels.push(`${date.getMonth() + 1}/${date.getDate()}`);
-                
-                // 模拟星标增长
-                const baseStars = 10;
-                const growth = Math.floor(Math.random() * 3) + 1;
-                const totalStars = baseStars + (29 - i) * growth;
-                data.push(totalStars);
-            }
-            
-            return { labels, data };
-        }
-        
-        // 更新图表
-        async function updateChart() {
-            const currentStars = await getCurrentStars();
-            const { labels, data } = generateMockStarHistory();
-            
-            // 更新图表数据
-            starChart.data.labels = labels;
-            starChart.data.datasets[0].data = data;
-            starChart.update();
-            
-            // 更新统计信息
-            document.getElementById('total-stars').textContent = currentStars;
-            document.getElementById('star-growth').textContent = data[data.length - 1] - data[0];
-            document.getElementById('last-update').textContent = new Date().toLocaleDateString();
-            document.getElementById('update-time').textContent = new Date().toLocaleString();
         }
         
         // 初始化页面
-        updateChart();
+        async function init() {
+            // 获取当前星标数
+            const stars = await getCurrentStars();
+            document.getElementById('total-stars').textContent = stars;
+            
+            // 更新时间
+            const now = new Date();
+            document.getElementById('last-update').textContent = now.toLocaleDateString();
+            document.getElementById('update-time').textContent = now.toLocaleString();
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>

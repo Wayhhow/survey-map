@@ -150,53 +150,31 @@ node convert-kml.js input.kml data/routes.geojson
 
 ## 星标总数变化曲线可视化
 
-为了追踪项目的受欢迎程度，我们可以添加星标总数变化曲线可视化功能。参考 [gh-star-history](https://github.com/ykdojo/gh-star-history) 项目，我们可以使用以下方法生成星标历史图表：
+为了追踪项目的受欢迎程度，我使用了 [Star-History](https://star-history.com) 工具来实现星标历史数据可视化。这是一个专门用于 GitHub 星标历史数据可视化的强大工具，能够将仓库的星标数据转化为直观的趋势图表。
 
-### 安装和使用
-
-1. **安装 Node.js**（版本 >= 16）
-2. **安装 GitHub CLI** 并进行身份验证：
-   ```bash
-   gh auth login
-   ```
-3. **生成星标历史图表**：
-   ```bash
-   # 生成当前项目的星标历史
-   npx gh-star-history your-username/survey-map
-   
-   # 生成特定样式的图表
-   npx gh-star-history your-username/survey-map --style green
-   
-   # 保存到指定文件
-   npx gh-star-history your-username/survey-map --output star-history.html
-   ```
-
-### 在 README 中添加图表
-
-我已经生成了星标历史图表，并将其添加到项目中。你可以通过以下方式查看：
-
-## 星标历史
-
-### 最近 30 天星标变化
+### 星标历史图表
 
 你可以直接访问以下链接查看交互式星标历史图表：
 
 - [星标历史图表](https://wayhhow.github.io/survey-map/star-history.html)
 
-> 注：这是一个交互式图表，你可以在浏览器中查看星标数量的变化趋势
-
-
+> 注：这是一个交互式图表，你可以在浏览器中查看星标数量的变化趋势，支持时间范围选择和数据导出
 
 ### 功能特点
 
-- **日期范围选择**：可以选择查看不同时间段的星标变化
-- **星标增长跟踪**：显示星标的增长趋势
-- **交互式图表**：支持悬停查看具体数据点
-- **多仓库比较**：可以同时比较多个仓库的星标增长情况
+- **实时数据**：直接从 GitHub 获取最新的星标数据
+- **交互式图表**：支持悬停查看具体数据点，缩放和平移
+- **时间范围选择**：可以选择查看不同时间段的星标变化
+- **多仓库对比**：支持同时比较多个仓库的星标增长情况
+- **数据导出**：可以将图表数据导出为 CSV 或 JSON 格式
 
 ### 技术实现
 
-- 使用 GitHub GraphQL API 获取星标历史数据
-- 使用 Plotly.js 生成交互式图表
-- 支持缓存机制，提高数据获取效率
-- 生成自包含的 HTML 文件，无需外部依赖
+- 使用 Star-History 工具的嵌入功能
+- 直接调用 GitHub API 获取星标历史数据
+- 使用先进的图表技术生成可视化效果
+- 响应式设计，在不同设备上都能正常显示
+
+### 如何在其他项目中使用
+
+如果你想在其他 GitHub 项目中使用 Star-History 工具，只需访问 [https://star-history.com](https://star-history.com)，输入仓库地址即可生成相应的星标历史图表。
