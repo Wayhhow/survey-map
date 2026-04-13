@@ -1,0 +1,14 @@
+{
+  "已勘测": {
+    "color": "#4CAF50",
+    "weight": 4,
+    "opacity": 0.8,
+    "description": "已完成现场勘测的线路"
+  },
+  "未勘测": {
+    "color": "#9E9E9E",
+    "weight": 3,
+    "opacity": 0.6,
+    "description": "计划中但未勘测的线路"
+  }
+}
