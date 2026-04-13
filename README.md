@@ -152,8 +152,4 @@ node convert-kml.js input.kml data/routes.geojson
 
 ### 星标变化曲线
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=Wayhhow/survey-map&type=date&theme=dark&legend=top-left" />
-  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Wayhhow/survey-map&type=date&legend=top-left" />
-  <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Wayhhow/survey-map&type=date&legend=top-left" />
-</picture>
+<iframe src="https://star-history.com/#Wayhhow/survey-map&Date" width="100%" height="400" frameborder="0"></iframe>
