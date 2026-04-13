@@ -148,8 +148,13 @@ node convert-kml.js input.kml data/routes.geojson
 - 线路数据中的 `properties.type` 字段用于区分线路类型
 - 如果没有指定类型，默认显示为 "待勘测" 类型
 
-## 星标历史
+## Star History
 
-### 星标变化曲线
 
-<iframe src="https://star-history.com/#Wayhhow/survey-map&Date" width="100%" height="400" frameborder="0"></iframe>
+<a href="https://www.star-history.com/?repos=Wayhhow%2Fsurvey-map&type=date&legend=top-left">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=Wayhhow/survey-map&type=date&theme=dark&legend=top-left" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Wayhhow/survey-map&type=date&legend=top-left" />
+    <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Wayhhow/survey-map&type=date&legend=top-left" />
+  </picture>
+</a>
