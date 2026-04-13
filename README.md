@@ -148,33 +148,12 @@ node convert-kml.js input.kml data/routes.geojson
 - 线路数据中的 `properties.type` 字段用于区分线路类型
 - 如果没有指定类型，默认显示为 "待勘测" 类型
 
-## 星标总数变化曲线可视化
+## 星标历史
 
-为了追踪项目的受欢迎程度，我使用了 [Star-History](https://star-history.com) 工具来实现星标历史数据可视化。这是一个专门用于 GitHub 星标历史数据可视化的强大工具，能够将仓库的星标数据转化为直观的趋势图表。
+### 星标变化曲线
 
-### 星标历史图表
-
-你可以直接访问以下链接查看交互式星标历史图表：
-
-- [星标历史图表](https://wayhhow.github.io/survey-map/star-history.html)
-
-> 注：这是一个交互式图表，你可以在浏览器中查看星标数量的变化趋势，支持时间范围选择和数据导出
-
-### 功能特点
-
-- **实时数据**：直接从 GitHub 获取最新的星标数据
-- **交互式图表**：支持悬停查看具体数据点，缩放和平移
-- **时间范围选择**：可以选择查看不同时间段的星标变化
-- **多仓库对比**：支持同时比较多个仓库的星标增长情况
-- **数据导出**：可以将图表数据导出为 CSV 或 JSON 格式
-
-### 技术实现
-
-- 使用 Star-History 工具的嵌入功能
-- 直接调用 GitHub API 获取星标历史数据
-- 使用先进的图表技术生成可视化效果
-- 响应式设计，在不同设备上都能正常显示
-
-### 如何在其他项目中使用
-
-如果你想在其他 GitHub 项目中使用 Star-History 工具，只需访问 [https://star-history.com](https://star-history.com)，输入仓库地址即可生成相应的星标历史图表。
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=Wayhhow/survey-map&type=date&theme=dark&legend=top-left" />
+  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Wayhhow/survey-map&type=date&legend=top-left" />
+  <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Wayhhow/survey-map&type=date&legend=top-left" />
+</picture>
