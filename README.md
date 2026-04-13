@@ -173,20 +173,19 @@ node convert-kml.js input.kml data/routes.geojson
 
 ### 在 README 中添加图表
 
-生成图表后，你可以将其截图并添加到 README 中，或者使用以下方法在 README 中嵌入交互式图表：
+我已经生成了星标历史图表，并将其添加到项目中。你可以通过以下方式查看：
 
-1. 将生成的 `star-history.html` 文件上传到项目中
-2. 在 README 中添加以下内容：
-
-```markdown
 ## 星标历史
 
 ### 最近 30 天星标变化
 
-![星标历史图表](https://your-username.github.io/survey-map/star-history.html)
+你可以直接访问以下链接查看交互式星标历史图表：
 
-> 注：这是一个交互式图表，你可以在浏览器中打开查看详细数据
-```
+- [星标历史图表](https://wayhhow.github.io/survey-map/star-history.html)
+
+> 注：这是一个交互式图表，你可以在浏览器中查看星标数量的变化趋势
+
+
 
 ### 功能特点
 
