@@ -370,6 +370,237 @@ body {
     to { transform: rotate(360deg); }
 }
 
+#welcome-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.4s ease;
+}
+
+#welcome-modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 16px;
+    box-shadow:
+        0 0.5px 1px rgba(0,0,0,0.04),
+        0 8px 16px rgba(0,0,0,0.08),
+        0 24px 48px rgba(0,0,0,0.12);
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.modal-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin: 0;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #aaa;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+    background: rgba(0,0,0,0.05);
+    color: #333;
+}
+
+.modal-body {
+    padding: 20px 24px;
+}
+
+.welcome-section {
+    margin-bottom: 20px;
+}
+
+.welcome-section h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.welcome-section p {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.6;
+    margin: 0 0 12px 0;
+}
+
+.welcome-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.welcome-section li {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.6;
+    padding-left: 18px;
+    position: relative;
+    margin-bottom: 6px;
+}
+
+.welcome-section li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #FF6B35;
+    font-weight: bold;
+}
+
+.github-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #24292e;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.github-btn:hover {
+    background: #2b3137;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px 20px;
+    border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #666;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    accent-color: #4CAF50;
+}
+
+.primary-btn {
+    background: linear-gradient(135deg, #FF6B35, #F7931E);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(255, 107, 53, 0.2);
+}
+
+.primary-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(255, 107, 53, 0.3);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        max-height: 85vh;
+    }
+    
+    .modal-header {
+        padding: 16px 20px 12px;
+    }
+    
+    .modal-header h2 {
+        font-size: 16px;
+    }
+    
+    .modal-body {
+        padding: 16px 20px;
+    }
+    
+    .welcome-section {
+        margin-bottom: 16px;
+    }
+    
+    .modal-footer {
+        padding: 12px 20px 16px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .checkbox-label {
+        justify-content: center;
+    }
+    
+    .primary-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
         animation-duration: 0.01ms !important;
