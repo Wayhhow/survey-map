@@ -88,25 +88,25 @@ function initStatsPanel() {
     const statsPanel = document.getElementById('stats');
     if (!statsPanel) return;
     
-    // 点击隐藏统计面板
+    // 点击切换统计面板透明度
     statsPanel.addEventListener('click', function() {
-        this.style.display = 'none';
+        this.classList.toggle('hidden');
     });
     
-    // 地图移动时显示统计面板
+    // 地图移动时显示统计面板（移除hidden类）
     if (map) {
         map.on('move', function() {
-            statsPanel.style.display = 'block';
+            statsPanel.classList.remove('hidden');
         });
         
-        // 地图缩放时显示统计面板
+        // 地图缩放时显示统计面板（移除hidden类）
         map.on('zoom', function() {
-            statsPanel.style.display = 'block';
+            statsPanel.classList.remove('hidden');
         });
         
-        // 地图点击时显示统计面板
+        // 地图点击时显示统计面板（移除hidden类）
         map.on('click', function() {
-            statsPanel.style.display = 'block';
+            statsPanel.classList.remove('hidden');
         });
     }
 }
