@@ -150,8 +150,8 @@ node convert-kml.js input.kml data/routes.geojson
 
 ## Star History
 
-### 星标统计
+### 星标历史图表
 
-[![GitHub stars](https://img.shields.io/github/stars/Wayhhow/survey-map.svg?style=flat-square)](https://github.com/Wayhhow/survey-map/stargazers)
+![Star History Chart](./star-history.svg)
 
-> 注：星标数据实时更新，反映当前仓库的星标数量
+> 注：图表通过 GitHub Actions 每 6 小时自动更新，确保显示最新的星标数据
