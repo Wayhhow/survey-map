@@ -23,22 +23,22 @@
   <line x1="90" y1="200" x2="100" y2="200" stroke="#333333" stroke-width="2"/>
   <line x1="90" y1="125" x2="100" y2="125" stroke="#333333" stroke-width="2"/>
   <line x1="90" y1="50" x2="100" y2="50" stroke="#333333" stroke-width="2"/>
-  
+
   <!-- 刻度标签 -->
   <text x="100" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">开始</text>
   <text x="400" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">现在</text>
   <text x="700" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">未来</text>
-  
+
   <!-- Y轴标签 -->
   <text x="70" y="355" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">0</text>
   <text x="70" y="280" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">0.5</text>
   <text x="70" y="205" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">1</text>
   <text x="70" y="130" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">1.5</text>
   <text x="70" y="55" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">2</text>
-  
+
   <!-- 数据曲线 -->
   <path d="M100,350 L250,350 L400,350 L550,350 L700,50" stroke="#4CAF50" stroke-width="3" fill="none"/>
-  
+
   <!-- 数据点 -->
   <circle cx="100" cy="350" r="5" fill="#4CAF50"/>
   <circle cx="250" cy="350" r="5" fill="#4CAF50"/>
