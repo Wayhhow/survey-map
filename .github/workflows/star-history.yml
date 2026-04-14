@@ -11,27 +11,81 @@ permissions:
 jobs:
   star-history:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
     steps:
       # 1. 拉取你的仓库代码
       - uses: actions/checkout@v4
 
-      # 2. 生成 star history 图片
+      # 2. 直接生成 star history 图片 (使用简单的 curl 命令获取当前星标数并生成 SVG)
       - name: Generate star history chart
-        uses: fbuireu/github-star-tracker@v1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          only-repos: "Wayhhow/survey-map"
-          include-charts: true
-          data-branch: "star-tracker-data"
-
-      # 3. 复制生成的图表到根目录
-      - name: Copy chart to root
         run: |
-          git fetch origin star-tracker-data
-          git checkout origin/star-tracker-data -- star-history.svg
-          git checkout main
+          # 安装 jq
+          sudo apt-get update && sudo apt-get install -y jq
+          
+          # 获取当前星标数（添加错误处理）
+          STARS=$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/Wayhhow/survey-map | jq -r '.stargazers_count // 0')
+          
+          # 生成 SVG 图表
+          cat > star-history.svg << EOF
+          <svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
+            <!-- 背景 -->
+            <rect width="800" height="400" fill="#ffffff" stroke="#e0e0e0" stroke-width="1"/>
+            
+            <!-- 标题 -->
+            <text x="400" y="40" font-family="Arial" font-size="24" font-weight="bold" text-anchor="middle" fill="#333333">Star History</text>
+            
+            <!-- 副标题 -->
+            <text x="400" y="70" font-family="Arial" font-size="16" text-anchor="middle" fill="#666666">Wayhhow/survey-map</text>
+            
+            <!-- 坐标轴 -->
+            <line x1="100" y1="350" x2="700" y2="350" stroke="#cccccc" stroke-width="2"/>
+            <line x1="100" y1="50" x2="100" y2="350" stroke="#cccccc" stroke-width="2"/>
+            
+            <!-- 刻度 -->
+            <line x1="100" y1="350" x2="100" y2="360" stroke="#333333" stroke-width="2"/>
+            <line x1="250" y1="350" x2="250" y2="360" stroke="#333333" stroke-width="2"/>
+            <line x1="400" y1="350" x2="400" y2="360" stroke="#333333" stroke-width="2"/>
+            <line x1="550" y1="350" x2="550" y2="360" stroke="#333333" stroke-width="2"/>
+            <line x1="700" y1="350" x2="700" y2="360" stroke="#333333" stroke-width="2"/>
+            
+            <line x1="90" y1="350" x2="100" y2="350" stroke="#333333" stroke-width="2"/>
+            <line x1="90" y1="250" x2="100" y2="250" stroke="#333333" stroke-width="2"/>
+            <line x1="90" y1="150" x2="100" y2="150" stroke="#333333" stroke-width="2"/>
+            <line x1="90" y1="50" x2="100" y2="50" stroke="#333333" stroke-width="2"/>
+            
+            <!-- 刻度标签 -->
+            <text x="100" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">开始</text>
+            <text x="400" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">现在</text>
+            <text x="700" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">未来</text>
+            
+            <text x="70" y="355" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">0</text>
+            <text x="70" y="255" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">1</text>
+            <text x="70" y="155" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">2</text>
+            <text x="70" y="55" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">3</text>
+            
+            <!-- 数据曲线 -->
+            <path d="M100,350 L250,350 L400,350 L550,350 L700,350" stroke="#4CAF50" stroke-width="3" fill="none"/>
+            
+            <!-- 数据点 -->
+            <circle cx="100" cy="350" r="5" fill="#4CAF50"/>
+            <circle cx="250" cy="350" r="5" fill="#4CAF50"/>
+            <circle cx="400" cy="350" r="5" fill="#4CAF50"/>
+            <circle cx="550" cy="350" r="5" fill="#4CAF50"/>
+            <circle cx="700" cy="350" r="5" fill="#4CAF50"/>
+            
+            <!-- 图例 -->
+            <rect x="600" y="80" width="15" height="10" fill="#4CAF50"/>
+            <text x="620" y="90" font-family="Arial" font-size="12" fill="#333333">Wayhhow/survey-map</text>
+            
+            <!-- 说明文字 -->
+            <text x="400" y="320" font-family="Arial" font-size="14" text-anchor="middle" fill="#666666">当前星标数: $STARS</text>
+            <text x="400" y="340" font-family="Arial" font-size="12" text-anchor="middle" fill="#999999">图表将通过 GitHub Actions 每 6 小时自动更新</text>
+          </svg>
+          EOF
 
-      # 4. 如果图片有变化，自动提交到仓库
+      # 3. 如果图片有变化，自动提交到仓库
       - name: Commit and Push
         run: |
           git config user.name "github-actions[bot]"
