@@ -52,7 +52,10 @@ function onEachFeature(feature, layer) {
     layer.on('click', function() {
         // 先恢复之前高亮的图层
         if (highlightedLayer) {
-            highlightedLayer.setStyle(highlightedLayer._originalStyle);
+            highlightedLayer.setStyle({
+                ...highlightedLayer._originalStyle,
+                dashArray: null // 确保恢复为实线
+            });
         }
         
         // 应用高亮样式
@@ -112,7 +115,10 @@ window.addEventListener('DOMContentLoaded', () => {
             // 如果点击的不是线路图层
             if (!e.originalEvent.target.closest('.leaflet-popup-content-wrapper') && !e.originalEvent.target.closest('.leaflet-interactive')) {
                 if (highlightedLayer) {
-                    highlightedLayer.setStyle(highlightedLayer._originalStyle);
+                    highlightedLayer.setStyle({
+                        ...highlightedLayer._originalStyle,
+                        dashArray: null // 确保恢复为实线
+                    });
                     highlightedLayer = null;
                 }
             }
