@@ -18,37 +18,31 @@
   <line x1="700" y1="350" x2="700" y2="360" stroke="#333333" stroke-width="2"/>
   
   <!-- Y轴刻度 -->
-  <line x1="90" y1="350" x2="100" y2="350" stroke="#333333" stroke-width="2"/>
-  <line x1="90" y1="275" x2="100" y2="275" stroke="#333333" stroke-width="2"/>
-  <line x1="90" y1="200" x2="100" y2="200" stroke="#333333" stroke-width="2"/>
-  <line x1="90" y1="125" x2="100" y2="125" stroke="#333333" stroke-width="2"/>
-  <line x1="90" y1="50" x2="100" y2="50" stroke="#333333" stroke-width="2"/>
+  SVGEOF
+  
+  # 添加Y轴刻度
+  echo "$Y_TICKS" >> star-history.svg
+  
+  # 继续生成SVG
+  cat >> star-history.svg << SVGEOF
   
   <!-- 刻度标签 -->
-  <text x="100" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">04/10</text>
-  <text x="400" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">04/12</text>
-  <text x="700" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">04/14</text>
+  $X_LABELS
   
   <!-- Y轴标签 -->
-  <text x="70" y="355" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">0</text>
-  <text x="70" y="280" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">1</text>
-  <text x="70" y="205" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">2</text>
-  <text x="70" y="130" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">3</text>
-  <text x="70" y="55" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">4</text>
+  $Y_LABELS
   
   <!-- 数据曲线 -->
-  <path d="M100,350 L400,275 L700,200" stroke="#4CAF50" stroke-width="3" fill="none"/>
+  <path d="$POINTS" stroke="#4CAF50" stroke-width="3" fill="none"/>
   
   <!-- 数据点 -->
-  <circle cx="100" cy="350" r="5" fill="#4CAF50"/>
-  <circle cx="400" cy="275" r="5" fill="#4CAF50"/>
-  <circle cx="700" cy="200" r="5" fill="#4CAF50"/>
+  $DATA_CIRCLES
   
   <!-- 图例 -->
   <rect x="600" y="80" width="15" height="10" fill="#4CAF50"/>
   <text x="620" y="90" font-family="Arial" font-size="12" fill="#333333">Wayhhow/survey-map</text>
   
   <!-- 说明文字 -->
-  <text x="400" y="320" font-family="Arial" font-size="14" text-anchor="middle" fill="#666666">当前星标数: 2</text>
+  <text x="400" y="320" font-family="Arial" font-size="14" text-anchor="middle" fill="#666666">当前星标数: $STARS</text>
   <text x="400" y="340" font-family="Arial" font-size="12" text-anchor="middle" fill="#999999">图表将通过 GitHub Actions 每 6 小时自动更新</text>
 </svg>
