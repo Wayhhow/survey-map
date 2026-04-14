@@ -120,9 +120,13 @@ jobs:
           Y_TICKS=""
           Y_LABELS=""
           for ((i=0; i<=4; i++)); do
-            Y_VALUE=$((i * MAX_STARS / 4))
+            # 计算Y轴值
+            Y_VALUE=$(echo "scale=1; $i * $MAX_STARS / 4" | bc)
+            # 计算Y坐标
             Y_POS=$((350 - (i * 300 / 4)))
+            # 添加刻度线
             Y_TICKS="$Y_TICKS <line x1=\"90\" y1=\"$Y_POS\" x2=\"100\" y2=\"$Y_POS\" stroke=\"#333333\" stroke-width=\"2\"/>"
+            # 添加标签
             Y_LABELS="$Y_LABELS <text x=\"70\" y=\"$((Y_POS + 5))\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"end\" fill=\"#666666\">$Y_VALUE</text>"
           done
           
