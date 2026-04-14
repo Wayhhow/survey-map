@@ -130,6 +130,48 @@ jobs:
             Y_LABELS="$Y_LABELS <text x=\"70\" y=\"$((Y_POS + 5))\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"end\" fill=\"#666666\">$Y_VALUE</text>"
           done
           
+          # 提取历史数据中的日期
+          DATES_ARRAY=$(echo "$UPDATED_HISTORY" | jq -r '.history[].date')
+          
+          # 生成X轴标签
+          X_LABELS=""
+          if [ $DATA_POINTS -gt 0 ]; then
+            # 只显示关键日期（开始、中间、结束）
+            if [ $DATA_POINTS -ge 3 ]; then
+              # 获取第一个、中间和最后一个日期
+              FIRST_DATE=$(echo "$DATES_ARRAY" | head -1)
+              MIDDLE_DATE=$(echo "$DATES_ARRAY" | sed -n "$((DATA_POINTS / 2 + 1))p")
+              LAST_DATE=$(echo "$DATES_ARRAY" | tail -1)
+              
+              # 格式化日期（只显示月-日）
+              FIRST_DATE_FORMATTED=$(echo "$FIRST_DATE" | cut -d '-' -f 2,3 | tr '-' '/')
+              MIDDLE_DATE_FORMATTED=$(echo "$MIDDLE_DATE" | cut -d '-' -f 2,3 | tr '-' '/')
+              LAST_DATE_FORMATTED=$(echo "$LAST_DATE" | cut -d '-' -f 2,3 | tr '-' '/')
+              
+              # 添加X轴标签
+              X_LABELS="<text x=\"100\" y=\"380\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"middle\" fill=\"#666666\">$FIRST_DATE_FORMATTED</text>"
+              X_LABELS="$X_LABELS <text x=\"400\" y=\"380\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"middle\" fill=\"#666666\">$MIDDLE_DATE_FORMATTED</text>"
+              X_LABELS="$X_LABELS <text x=\"700\" y=\"380\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"middle\" fill=\"#666666\">$LAST_DATE_FORMATTED</text>"
+            else
+              # 数据点不足3个时，只显示开始和结束日期
+              FIRST_DATE=$(echo "$DATES_ARRAY" | head -1)
+              LAST_DATE=$(echo "$DATES_ARRAY" | tail -1)
+              
+              # 格式化日期
+              FIRST_DATE_FORMATTED=$(echo "$FIRST_DATE" | cut -d '-' -f 2,3 | tr '-' '/')
+              LAST_DATE_FORMATTED=$(echo "$LAST_DATE" | cut -d '-' -f 2,3 | tr '-' '/')
+              
+              # 添加X轴标签
+              X_LABELS="<text x=\"100\" y=\"380\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"middle\" fill=\"#666666\">$FIRST_DATE_FORMATTED</text>"
+              X_LABELS="$X_LABELS <text x=\"700\" y=\"380\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"middle\" fill=\"#666666\">$LAST_DATE_FORMATTED</text>"
+            fi
+          else
+            # 没有数据时显示默认标签
+            X_LABELS="<text x=\"100\" y=\"380\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"middle\" fill=\"#666666\">开始</text>"
+            X_LABELS="$X_LABELS <text x=\"400\" y=\"380\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"middle\" fill=\"#666666\">现在</text>"
+            X_LABELS="$X_LABELS <text x=\"700\" y=\"380\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"middle\" fill=\"#666666\">未来</text>"
+          fi
+          
           # 生成SVG图表
           cat > star-history.svg << EOF
           <svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
@@ -155,9 +197,7 @@ jobs:
             $Y_TICKS
             
             <!-- 刻度标签 -->
-            <text x="100" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">开始</text>
-            <text x="400" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">现在</text>
-            <text x="700" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">未来</text>
+            $X_LABELS
             
             <!-- Y轴标签 -->
             $Y_LABELS
