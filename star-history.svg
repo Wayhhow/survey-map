@@ -27,16 +27,16 @@
    <text x="70" y="355" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">0</text> <text x="70" y="255" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">1</text> <text x="70" y="155" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">2</text> <text x="70" y="55" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">3</text>
   
   <!-- 数据曲线 -->
-  <path d="M100,350 L400,250 L700,150" stroke="#4CAF50" stroke-width="3" fill="none"/>
+  <path d="M100,350 L400,250 L700,250" stroke="#4CAF50" stroke-width="3" fill="none"/>
   
   <!-- 数据点 -->
-   <circle cx="100" cy="350" r="5" fill="#4CAF50"/> <circle cx="400" cy="250" r="5" fill="#4CAF50"/> <circle cx="700" cy="150" r="5" fill="#4CAF50"/>
+   <circle cx="100" cy="350" r="5" fill="#4CAF50"/> <circle cx="400" cy="250" r="5" fill="#4CAF50"/> <circle cx="700" cy="250" r="5" fill="#4CAF50"/>
   
   <!-- 图例 -->
   <rect x="600" y="80" width="15" height="10" fill="#4CAF50"/>
   <text x="620" y="90" font-family="Arial" font-size="12" fill="#333333">Wayhhow/survey-map</text>
   
   <!-- 说明文字 -->
-  <text x="400" y="320" font-family="Arial" font-size="14" text-anchor="middle" fill="#666666">当前星标数: 2</text>
+  <text x="400" y="320" font-family="Arial" font-size="14" text-anchor="middle" fill="#666666">当前星标数: 1</text>
   <text x="400" y="340" font-family="Arial" font-size="12" text-anchor="middle" fill="#999999">图表将通过 GitHub Actions 每 6 小时自动更新</text>
 </svg>
