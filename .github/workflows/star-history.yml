@@ -91,8 +91,8 @@ jobs:
             i=0
             for STAR in $STARS_ARRAY; do
               X=$((X_START + i * X_STEP))
-              # 计算Y坐标（根据星标数和最大星标数）
-              Y=$((350 - (STAR * 300 / (MAX_STARS + 1))))
+              # 计算Y坐标（根据星标数和Y轴最大值，确保对齐整数刻度）
+              Y=$((350 - (STAR * 300 / Y_MAX)))
               if [ $i -eq 0 ]; then
                 POINTS="M$X,$Y"
               else
@@ -110,7 +110,8 @@ jobs:
             i=0
             for STAR in $STARS_ARRAY; do
               X=$((X_START + i * X_STEP))
-              Y=$((350 - (STAR * 300 / (MAX_STARS + 1))))
+              # 计算Y坐标（根据星标数和Y轴最大值，确保对齐整数刻度）
+              Y=$((350 - (STAR * 300 / Y_MAX)))
               DATA_CIRCLES="$DATA_CIRCLES <circle cx=\"$X\" cy=\"$Y\" r=\"5\" fill=\"#4CAF50\"/>"
               i=$((i + 1))
             done
@@ -119,15 +120,19 @@ jobs:
           # 生成Y轴刻度标签
           Y_TICKS=""
           Y_LABELS=""
-          for ((i=0; i<=4; i++)); do
-            # 计算Y轴值
-            Y_VALUE=$(echo "scale=1; $i * $MAX_STARS / 4" | bc)
+          # 计算Y轴最大刻度值（确保是整数且大于等于MAX_STARS）
+          Y_MAX=$((MAX_STARS + 1))
+          if [ $Y_MAX -lt 3 ]; then
+            Y_MAX=3
+          fi
+          # 生成Y轴刻度（只显示整数）
+          for ((i=0; i<=$Y_MAX; i++)); do
             # 计算Y坐标
-            Y_POS=$((350 - (i * 300 / 4)))
+            Y_POS=$((350 - (i * 300 / Y_MAX)))
             # 添加刻度线
             Y_TICKS="$Y_TICKS <line x1=\"90\" y1=\"$Y_POS\" x2=\"100\" y2=\"$Y_POS\" stroke=\"#333333\" stroke-width=\"2\"/>"
             # 添加标签
-            Y_LABELS="$Y_LABELS <text x=\"70\" y=\"$((Y_POS + 5))\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"end\" fill=\"#666666\">$Y_VALUE</text>"
+            Y_LABELS="$Y_LABELS <text x=\"70\" y=\"$((Y_POS + 5))\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"end\" fill=\"#666666\">$i</text>"
           done
           
           # 提取历史数据中的日期
