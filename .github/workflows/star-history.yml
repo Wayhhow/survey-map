@@ -5,6 +5,9 @@ on:
     - cron: '0 */6 * * *'   # 每 6 小时更新一次
   workflow_dispatch:          # 允许手动点击触发
 
+permissions:
+  contents: write
+
 jobs:
   star-history:
     runs-on: ubuntu-latest
@@ -13,14 +16,22 @@ jobs:
       - uses: actions/checkout@v4
 
       # 2. 生成 star history 图片
-      - uses: star-history/star-history-action@v1.0.0
+      - name: Generate star history chart
+        uses: fbuireu/github-star-tracker@v1
         with:
-          REPOS: "Wayhhow/survey-map"
-          BRANCH: "main"
-          FILENAME: "star-history"
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          only-repos: "Wayhhow/survey-map"
+          include-charts: true
+          data-branch: "star-tracker-data"
 
-      # 3. 如果图片有变化，自动提交到仓库
+      # 3. 复制生成的图表到根目录
+      - name: Copy chart to root
+        run: |
+          git fetch origin star-tracker-data
+          git checkout origin/star-tracker-data -- star-history.svg
+          git checkout main
+
+      # 4. 如果图片有变化，自动提交到仓库
       - name: Commit and Push
         run: |
           git config user.name "github-actions[bot]"
