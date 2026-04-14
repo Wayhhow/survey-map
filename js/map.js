@@ -35,12 +35,9 @@ function onEachFeature(feature, layer) {
         length = turf.length(line, { units: 'kilometers' });
     }
     
-    // 创建 popup 内容
-    const popupContent = `
-        <h3>${feature.properties.name || '未命名线路'}</h3>
-        <p>类型: ${feature.properties.type || '未勘测'}</p>
-        <p>长度: ${length.toFixed(2)} 公里</p>
-    `;
+    const type = feature.properties.type || '未勘测';
+    const typeColor = typesConfig && typesConfig[type] ? typesConfig[type].color : '#9E9E9E';
+    const popupContent = '<div class="popup-accent" style="border-top:3px solid ' + typeColor + '"><h3>' + (feature.properties.name || '未命名线路') + '</h3><p>类型: ' + type + '</p><p>长度: ' + length.toFixed(2) + ' 公里</p></div>';
     
     // 绑定 popup
     layer.bindPopup(popupContent);
@@ -68,6 +65,19 @@ function onEachFeature(feature, layer) {
         // 保存当前高亮的图层
         highlightedLayer = layer;
     });
+
+    layer.on('mouseover', function() {
+        if (highlightedLayer !== layer) {
+            const style = getStyleByType(feature);
+            layer.setStyle({ weight: style.weight + 1 });
+        }
+    });
+
+    layer.on('mouseout', function() {
+        if (highlightedLayer !== layer) {
+            layer.setStyle(getStyleByType(feature));
+        }
+    });
 }
 
 // 渲染线路数据
@@ -87,7 +97,13 @@ function renderRoutes() {
     
     // 调整地图视图以显示所有线路
     map.fitBounds(window.routesLayer.getBounds(), { padding: [50, 50] });
-    
+
+    const loading = document.getElementById('loading');
+    if (loading) {
+        loading.classList.add('fade-out');
+        setTimeout(function() { loading.remove(); }, 600);
+    }
+
     console.log('线路渲染完成');
 }
 
