@@ -43,7 +43,7 @@ body {
 /* 统计面板 */
 #stats {
     position: fixed;
-    bottom: 60px;
+    bottom: 25px;
     right: 10px;
     background: rgba(255, 255, 255, 0.9);
     padding: 12px;
@@ -152,7 +152,7 @@ body {
     }
     
     #stats {
-        bottom: 60px;
+        bottom: 25px;
         right: 10px;
         left: auto;
         max-width: 220px;
