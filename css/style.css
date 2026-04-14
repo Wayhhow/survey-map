@@ -100,6 +100,49 @@ body {
     color: #666;
 }
 
+/* GitHub链接和作者信息 */
+#github-link {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 8px 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    max-width: 100px;
+}
+
+#github-link a {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    color: #333;
+    font-size: 12px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+#github-link a:hover {
+    color: #000;
+    transform: translateY(-1px);
+}
+
+#github-link svg {
+    flex-shrink: 0;
+}
+
+#github-link #author {
+    font-size: 10px;
+    color: #666;
+    text-align: center;
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
     #title {
@@ -113,5 +156,25 @@ body {
         right: 10px;
         left: 10px;
         max-width: none;
+    }
+    
+    #github-link {
+        bottom: 80px;
+        left: 10px;
+        padding: 6px 10px;
+        max-width: 80px;
+    }
+    
+    #github-link a {
+        font-size: 10px;
+    }
+    
+    #github-link svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    #github-link #author {
+        font-size: 9px;
     }
 }
