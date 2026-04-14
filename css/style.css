@@ -154,8 +154,8 @@ body {
     #stats {
         bottom: 10px;
         right: 10px;
-        left: 10px;
-        max-width: none;
+        left: auto;
+        max-width: 250px;
     }
     
     #github-link {
