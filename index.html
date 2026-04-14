@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>勘测线路地图</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <!-- 自定义样式 -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Turf.js 用于长度计算 -->
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+</head>
+<body>
+    <div id="title">橙光队无障碍督导路线可视化</div>
+    <div id="map"></div>
+    <div id="stats">
+        <h3>线路统计</h3>
+        <div id="total-length"></div>
+        <div id="type-stats"></div>
+    </div>
+    <!-- 数据加载和地图渲染脚本 -->
+    <script src="js/data.js"></script>
+    <script src="js/map.js"></script>
+</body>
+</html>

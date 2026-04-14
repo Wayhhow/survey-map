@@ -1,0 +1,21 @@
+{
+  "name": "survey-map",
+  "version": "1.0.0",
+  "description": "GitHub Pages 托管的地图网站，显示 Google My Maps 导出的线路",
+  "main": "index.html",
+  "scripts": {
+    "convert": "node convert-kml.js"
+  },
+  "dependencies": {
+    "@mapbox/togeojson": "^0.16.0",
+    "xmldom": "^0.6.0"
+  },
+  "keywords": [
+    "map",
+    "leaflet",
+    "geojson",
+    "kml"
+  ],
+  "author": "",
+  "license": "MIT"
+}
