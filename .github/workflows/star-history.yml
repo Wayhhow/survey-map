@@ -27,6 +27,12 @@ jobs:
           # 获取当前星标数（添加错误处理）
           STARS=$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/Wayhhow/survey-map | jq -r '.stargazers_count // 0')
           
+          # 计算数据点的 Y 坐标（根据星标数动态调整）
+          MAX_STARS=$((STARS + 1))
+          if [ $MAX_STARS -lt 3 ]; then
+            MAX_STARS=3
+          fi
+          
           # 生成 SVG 图表
           cat > star-history.svg << EOF
           <svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
@@ -66,14 +72,14 @@ jobs:
             <text x="70" y="55" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">3</text>
             
             <!-- 数据曲线 -->
-            <path d="M100,350 L250,350 L400,350 L550,350 L700,350" stroke="#4CAF50" stroke-width="3" fill="none"/>
+            <path d="M100,350 L250,350 L400,350 L550,350 L700,$((350 - (STARS * 100)))" stroke="#4CAF50" stroke-width="3" fill="none"/>
             
             <!-- 数据点 -->
             <circle cx="100" cy="350" r="5" fill="#4CAF50"/>
             <circle cx="250" cy="350" r="5" fill="#4CAF50"/>
             <circle cx="400" cy="350" r="5" fill="#4CAF50"/>
             <circle cx="550" cy="350" r="5" fill="#4CAF50"/>
-            <circle cx="700" cy="350" r="5" fill="#4CAF50"/>
+            <circle cx="700" cy="$((350 - (STARS * 100)))" r="5" fill="#4CAF50"/>
             
             <!-- 图例 -->
             <rect x="600" y="80" width="15" height="10" fill="#4CAF50"/>
