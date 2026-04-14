@@ -79,13 +79,36 @@ jobs:
             DATA_POINTS=1
           fi
           
+          # 计算Y轴最大刻度值（确保是整数且大于等于MAX_STARS）
+          Y_MAX=$((MAX_STARS + 1))
+          if [ $Y_MAX -lt 3 ]; then
+            Y_MAX=3
+          fi
+          
+          # 生成Y轴刻度标签
+          Y_TICKS=""
+          Y_LABELS=""
+          # 生成Y轴刻度（只显示整数）
+          for ((i=0; i<=$Y_MAX; i++)); do
+            # 计算Y坐标
+            Y_POS=$((350 - (i * 300 / Y_MAX)))
+            # 添加刻度线
+            Y_TICKS="$Y_TICKS <line x1=\"90\" y1=\"$Y_POS\" x2=\"100\" y2=\"$Y_POS\" stroke=\"#333333\" stroke-width=\"2\"/>"
+            # 添加标签
+            Y_LABELS="$Y_LABELS <text x=\"70\" y=\"$((Y_POS + 5))\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"end\" fill=\"#666666\">$i</text>"
+          done
+          
           # 生成数据点坐标
           POINTS=""
           if [ $DATA_POINTS -gt 0 ]; then
             # 计算每个数据点的X坐标
             X_START=100
             X_END=700
-            X_STEP=$(( (X_END - X_START) / ($DATA_POINTS - 1) ))
+            if [ $DATA_POINTS -eq 1 ]; then
+              X_STEP=0
+            else
+              X_STEP=$(( (X_END - X_START) / ($DATA_POINTS - 1) ))
+            fi
             
             # 生成路径
             i=0
@@ -116,24 +139,6 @@ jobs:
               i=$((i + 1))
             done
           fi
-          
-          # 生成Y轴刻度标签
-          Y_TICKS=""
-          Y_LABELS=""
-          # 计算Y轴最大刻度值（确保是整数且大于等于MAX_STARS）
-          Y_MAX=$((MAX_STARS + 1))
-          if [ $Y_MAX -lt 3 ]; then
-            Y_MAX=3
-          fi
-          # 生成Y轴刻度（只显示整数）
-          for ((i=0; i<=$Y_MAX; i++)); do
-            # 计算Y坐标
-            Y_POS=$((350 - (i * 300 / Y_MAX)))
-            # 添加刻度线
-            Y_TICKS="$Y_TICKS <line x1=\"90\" y1=\"$Y_POS\" x2=\"100\" y2=\"$Y_POS\" stroke=\"#333333\" stroke-width=\"2\"/>"
-            # 添加标签
-            Y_LABELS="$Y_LABELS <text x=\"70\" y=\"$((Y_POS + 5))\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"end\" fill=\"#666666\">$i</text>"
-          done
           
           # 提取历史数据中的日期
           DATES_ARRAY=$(echo "$UPDATED_HISTORY" | jq -r '.history[].date')
@@ -178,7 +183,7 @@ jobs:
           fi
           
           # 生成SVG图表
-          cat > star-history.svg << EOF
+          cat > star-history.svg << 'SVGEOF'
           <svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
             <!-- 背景 -->
             <rect width="800" height="400" fill="#ffffff" stroke="#e0e0e0" stroke-width="1"/>
@@ -199,7 +204,13 @@ jobs:
             <line x1="700" y1="350" x2="700" y2="360" stroke="#333333" stroke-width="2"/>
             
             <!-- Y轴刻度 -->
-            $Y_TICKS
+            SVGEOF
+            
+            # 添加Y轴刻度
+            echo "$Y_TICKS" >> star-history.svg
+            
+            # 继续生成SVG
+            cat >> star-history.svg << SVGEOF
             
             <!-- 刻度标签 -->
             $X_LABELS
@@ -221,7 +232,7 @@ jobs:
             <text x="400" y="320" font-family="Arial" font-size="14" text-anchor="middle" fill="#666666">当前星标数: $STARS</text>
             <text x="400" y="340" font-family="Arial" font-size="12" text-anchor="middle" fill="#999999">图表将通过 GitHub Actions 每 6 小时自动更新</text>
           </svg>
-          EOF
+          SVGEOF
 
       # 3. 如果图片或历史数据有变化，自动提交到仓库
       - name: Commit and Push
