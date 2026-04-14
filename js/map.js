@@ -120,6 +120,40 @@ function listenForDataLoad() {
 
 // 页面加载完成后初始化
 window.addEventListener('DOMContentLoaded', () => {
+    // 检查是否需要显示欢迎模态框
+    const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
+    if (!hasSeenWelcome) {
+        setTimeout(() => {
+            const welcomeModal = document.getElementById('welcome-modal');
+            if (welcomeModal) {
+                welcomeModal.classList.remove('hidden');
+            }
+        }, 1000);
+    }
+
+    // 绑定关闭按钮事件
+    const closeWelcome = document.getElementById('close-welcome');
+    const closeWelcomeBtn = document.getElementById('close-welcome-btn');
+    const welcomeModal = document.getElementById('welcome-modal');
+    const dontShowAgain = document.getElementById('dont-show-again');
+
+    function closeWelcomeModal() {
+        if (welcomeModal) {
+            if (dontShowAgain && dontShowAgain.checked) {
+                localStorage.setItem('hasSeenWelcome', 'true');
+            }
+            welcomeModal.classList.add('hidden');
+        }
+    }
+
+    if (closeWelcome) {
+        closeWelcome.addEventListener('click', closeWelcomeModal);
+    }
+
+    if (closeWelcomeBtn) {
+        closeWelcomeBtn.addEventListener('click', closeWelcomeModal);
+    }
+
     initMap();
     listenForDataLoad();
     initStatsPanel();
