@@ -1,35 +1,76 @@
 # 橙光队无障碍督导路线可视化
 
-GitHub Pages 托管的地图网站，显示 Google My Maps 导出的线路，按类型区分颜色。
+<p align="center">
+  <img src="image/logo.png" alt="橙光队队徽" width="80" height="80">
+</p>
 
-## 项目结构
+<p align="center">
+  <a href="https://wayhhow.github.io/survey-map/" target="_blank">
+    <img src="https://img.shields.io/badge/🌍%20访问地图-立即查看-brightgreen" alt="访问地图">
+  </a>
+  <a href="https://github.com/Wayhhow/survey-map" target="_blank">
+    <img src="https://img.shields.io/github/stars/Wayhhow/survey-map?style=social" alt="GitHub Stars">
+  </a>
+</p>
+
+## 📋 项目简介
+
+GitHub Pages 托管的地图网站，用于可视化橙光队的无障碍督导路线。支持线路展示、类型区分、长度统计等功能，为无障碍督导工作提供直观的路线管理工具。
+
+## 🎯 核心功能
+
+- **线路可视化**: 使用 Leaflet 地图库展示所有督导路线
+- **类型区分**: 不同类型线路以不同颜色显示（已勘测/待勘测）
+- **长度统计**: 实时计算并显示线路总长度和各类型长度
+- **交互功能**: 点击线路查看详细信息（名称、类型、长度）
+- **自动适配**: 地图自动调整视图以显示所有线路
+- **响应式设计**: 支持桌面和移动设备
+- **实时更新**: 通过 GitHub Actions 自动部署和更新
+
+## 🌐 快速访问
+
+**直接访问地图**: [https://wayhhow.github.io/survey-map/](https://wayhhow.github.io/survey-map/)
+
+## 📁 项目结构
 
 ```
 survey-map/
 ├── index.html          # 主页面
 ├── css/
-│   └── style.css       # 样式
+│   └── style.css       # 样式定义
 ├── js/
 │   ├── map.js          # 地图初始化、渲染
 │   └── data.js         # 数据加载、统计计算
 ├── data/
-│   ├── routes.geojson  # 所有线路数据（单一文件）
+│   ├── routes.geojson  # 线路数据
 │   └── types.json      # 类型颜色配置
+├── image/
+│   └── logo.png        # 橙光队队徽
 ├── convert-kml.js      # KML 转 GeoJSON 工具
+├── star-history.html   # 星标统计页面
+├── star-history.svg    # 星标历史图表
+├── .star-history.json  # 星标历史数据
 ├── package.json        # 依赖配置
+├── README.md           # 项目文档
 └── .github/
     └── workflows/
-        └── deploy.yml  # 自动部署配置
+        ├── deploy.yml      # 自动部署配置
+        └── star-history.yml  # 星标历史更新配置
 ```
 
-## 技术栈
+## 🛠 技术栈
 
-- **地图库**: Leaflet 1.9.x
-- **底图**: CartoDB Positron
-- **数据格式**: GeoJSON
-- **数据处理**: Turf.js
+| 类别 | 技术/库 | 版本 | 用途 |
+|------|---------|------|------|
+| **地图库** | Leaflet | 1.9.4 | 地图初始化和渲染 |
+| **底图** | 高德地图 | - | 提供地图底图服务 |
+| **数据处理** | Turf.js | 6.x | 计算线路长度 |
+| **数据格式** | GeoJSON | - | 存储线路数据 |
+| **构建工具** | Node.js | - | 运行转换脚本 |
+| **部署** | GitHub Pages | - | 托管网站 |
+| **CI/CD** | GitHub Actions | - | 自动部署和星标统计 |
 
-## 部署步骤
+## 🚀 部署指南
 
 ### 1. 创建 GitHub 仓库
 
@@ -58,7 +99,7 @@ git push origin main
 
 GitHub Pages 会自动构建和部署你的网站，通常需要 1-2 分钟。部署完成后，你可以在 `https://your-username.github.io/survey-map` 访问网站。
 
-## 使用方法
+## 📊 使用方法
 
 ### 1. 准备线路数据
 
@@ -109,15 +150,7 @@ node convert-kml.js input.kml data/routes.geojson
 }
 ```
 
-## 功能说明
-
-- **地图显示**: 显示所有线路，按类型区分颜色
-- **线路点击**: 点击线路显示详细信息（名称、类型、长度）
-- **统计面板**: 显示总线路长度和各类型线路长度
-- **自动适配**: 地图会自动调整视图以显示所有线路
-- **标题显示**: 地图顶部显示项目标题"橙光队无障碍督导路线可视化"
-
-## 开发指南
+## 👨‍💻 开发指南
 
 ### 本地预览
 
@@ -135,23 +168,39 @@ node convert-kml.js input.kml data/routes.geojson
 ### 代码结构
 
 - `index.html`: 页面结构和脚本引入
-- `css/style.css`: 样式定义
-- `js/data.js`: 数据加载、长度计算和统计
-- `js/map.js`: 地图初始化和线路渲染
+- `css/style.css`: 样式定义，包含响应式设计
+- `js/data.js`: 数据加载、长度计算和统计功能
+- `js/map.js`: 地图初始化、线路渲染和交互事件
 - `data/types.json`: 类型颜色配置
-- `convert-kml.js`: KML 转 GeoJSON 工具
+- `convert-kml.js`: KML 转 GeoJSON 工具脚本
 
-## 注意事项
+## ⚠️ 注意事项
 
 - 确保 Google My Maps 导出的 KML 文件包含线路数据
 - 转换后的 GeoJSON 文件应放在 `data/routes.geojson` 位置
 - 线路数据中的 `properties.type` 字段用于区分线路类型
 - 如果没有指定类型，默认显示为 "待勘测" 类型
+- 星标历史图表通过 GitHub Actions 每 6 小时自动更新
 
-## Star History
+## ⭐ Star History
 
 ### 星标历史图表
 
 ![Star History Chart](https://wayhhow.github.io/survey-map/star-history.svg)
 
 > 注：图表通过 GitHub Actions 每 6 小时自动更新，确保显示最新的星标数据
+
+## 📄 许可证
+
+本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件
+
+## 👤 作者
+
+**Wayhhow**
+- GitHub: [@Wayhhow](https://github.com/Wayhhow)
+
+---
+
+<p align="center">
+  🌟 如果你觉得这个项目有用，请给它点个星吧！
+</p>
