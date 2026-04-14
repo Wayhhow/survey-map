@@ -54,7 +54,7 @@ function onEachFeature(feature, layer) {
         if (highlightedLayer) {
             highlightedLayer.setStyle({
                 ...highlightedLayer._originalStyle,
-                dashArray: null // 确保恢复为实线
+                dashArray: '' // 使用空字符串确保恢复为实线
             });
         }
         
@@ -117,7 +117,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 if (highlightedLayer) {
                     highlightedLayer.setStyle({
                         ...highlightedLayer._originalStyle,
-                        dashArray: null // 确保恢复为实线
+                        dashArray: '' // 使用空字符串确保恢复为实线
                     });
                     highlightedLayer = null;
                 }
