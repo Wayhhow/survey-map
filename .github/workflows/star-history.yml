@@ -27,13 +27,106 @@ jobs:
           # 获取当前星标数（添加错误处理）
           STARS=$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/Wayhhow/survey-map | jq -r '.stargazers_count // 0')
           
-          # 计算数据点的 Y 坐标（根据星标数动态调整）
-          MAX_STARS=$((STARS + 1))
-          if [ $MAX_STARS -lt 3 ]; then
-            MAX_STARS=3
+          # 获取当前日期
+          CURRENT_DATE=$(date +"%Y-%m-%d")
+          
+          # 历史数据文件路径
+          HISTORY_FILE=".star-history.json"
+          
+          # 初始化历史数据文件（如果不存在）
+          if [ ! -f "$HISTORY_FILE" ]; then
+            echo '{"history": []}' > "$HISTORY_FILE"
           fi
           
-          # 生成 SVG 图表
+          # 读取历史数据
+          HISTORY=$(cat "$HISTORY_FILE")
+          
+          # 检查今天是否已经记录了数据
+          TODAY_RECORDED=$(echo "$HISTORY" | jq -r ".history[] | select(.date == \"$CURRENT_DATE\") | .stars")
+          
+          # 如果今天还没有记录数据，添加新记录
+          if [ -z "$TODAY_RECORDED" ]; then
+            # 添加新记录
+            NEW_HISTORY=$(echo "$HISTORY" | jq ".history += [{\"date\": \"$CURRENT_DATE\", \"stars\": $STARS}]")
+            echo "$NEW_HISTORY" > "$HISTORY_FILE"
+            # 只保留最近30天的数据
+            TRIMMED_HISTORY=$(echo "$NEW_HISTORY" | jq ".history = (.history | sort_by(.date) | reverse | .[:30] | reverse)")
+            echo "$TRIMMED_HISTORY" > "$HISTORY_FILE"
+          else
+            # 更新今天的记录
+            UPDATED_HISTORY=$(echo "$HISTORY" | jq ".history = (.history | map(if .date == \"$CURRENT_DATE\" then .stars = $STARS else . end))")
+            echo "$UPDATED_HISTORY" > "$HISTORY_FILE"
+          fi
+          
+          # 读取更新后的历史数据
+          UPDATED_HISTORY=$(cat "$HISTORY_FILE")
+          
+          # 提取星标数据数组
+          STARS_ARRAY=$(echo "$UPDATED_HISTORY" | jq -r '.history[].stars')
+          
+          # 计算最大星标数
+          MAX_STARS=$(echo "$UPDATED_HISTORY" | jq -r '.history[].stars' | sort -n | tail -1)
+          if [ -z "$MAX_STARS" ]; then
+            MAX_STARS=$STARS
+          fi
+          if [ $MAX_STARS -lt 1 ]; then
+            MAX_STARS=1
+          fi
+          
+          # 计算数据点数量
+          DATA_POINTS=$(echo "$STARS_ARRAY" | wc -l)
+          if [ $DATA_POINTS -lt 1 ]; then
+            DATA_POINTS=1
+          fi
+          
+          # 生成数据点坐标
+          POINTS=""
+          if [ $DATA_POINTS -gt 0 ]; then
+            # 计算每个数据点的X坐标
+            X_START=100
+            X_END=700
+            X_STEP=$(( (X_END - X_START) / ($DATA_POINTS - 1) ))
+            
+            # 生成路径
+            i=0
+            for STAR in $STARS_ARRAY; do
+              X=$((X_START + i * X_STEP))
+              # 计算Y坐标（根据星标数和最大星标数）
+              Y=$((350 - (STAR * 300 / (MAX_STARS + 1))))
+              if [ $i -eq 0 ]; then
+                POINTS="M$X,$Y"
+              else
+                POINTS="$POINTS L$X,$Y"
+              fi
+              i=$((i + 1))
+            done
+          else
+            POINTS="M100,350 L700,350"
+          fi
+          
+          # 生成数据点
+          DATA_CIRCLES=""
+          if [ $DATA_POINTS -gt 0 ]; then
+            i=0
+            for STAR in $STARS_ARRAY; do
+              X=$((X_START + i * X_STEP))
+              Y=$((350 - (STAR * 300 / (MAX_STARS + 1))))
+              DATA_CIRCLES="$DATA_CIRCLES <circle cx=\"$X\" cy=\"$Y\" r=\"5\" fill=\"#4CAF50\"/>"
+              i=$((i + 1))
+            done
+          fi
+          
+          # 生成Y轴刻度标签
+          Y_TICKS=""
+          Y_LABELS=""
+          for ((i=0; i<=4; i++)); do
+            Y_VALUE=$((i * MAX_STARS / 4))
+            Y_POS=$((350 - (i * 300 / 4)))
+            Y_TICKS="$Y_TICKS <line x1=\"90\" y1=\"$Y_POS\" x2=\"100\" y2=\"$Y_POS\" stroke=\"#333333\" stroke-width=\"2\"/>"
+            Y_LABELS="$Y_LABELS <text x=\"70\" y=\"$((Y_POS + 5))\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"end\" fill=\"#666666\">$Y_VALUE</text>"
+          done
+          
+          # 生成SVG图表
           cat > star-history.svg << EOF
           <svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
             <!-- 背景 -->
@@ -49,37 +142,27 @@ jobs:
             <line x1="100" y1="350" x2="700" y2="350" stroke="#cccccc" stroke-width="2"/>
             <line x1="100" y1="50" x2="100" y2="350" stroke="#cccccc" stroke-width="2"/>
             
-            <!-- 刻度 -->
+            <!-- X轴刻度 -->
             <line x1="100" y1="350" x2="100" y2="360" stroke="#333333" stroke-width="2"/>
-            <line x1="250" y1="350" x2="250" y2="360" stroke="#333333" stroke-width="2"/>
             <line x1="400" y1="350" x2="400" y2="360" stroke="#333333" stroke-width="2"/>
-            <line x1="550" y1="350" x2="550" y2="360" stroke="#333333" stroke-width="2"/>
             <line x1="700" y1="350" x2="700" y2="360" stroke="#333333" stroke-width="2"/>
             
-            <line x1="90" y1="350" x2="100" y2="350" stroke="#333333" stroke-width="2"/>
-            <line x1="90" y1="250" x2="100" y2="250" stroke="#333333" stroke-width="2"/>
-            <line x1="90" y1="150" x2="100" y2="150" stroke="#333333" stroke-width="2"/>
-            <line x1="90" y1="50" x2="100" y2="50" stroke="#333333" stroke-width="2"/>
+            <!-- Y轴刻度 -->
+            $Y_TICKS
             
             <!-- 刻度标签 -->
             <text x="100" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">开始</text>
             <text x="400" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">现在</text>
             <text x="700" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">未来</text>
             
-            <text x="70" y="355" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">0</text>
-            <text x="70" y="255" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">1</text>
-            <text x="70" y="155" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">2</text>
-            <text x="70" y="55" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">3</text>
+            <!-- Y轴标签 -->
+            $Y_LABELS
             
             <!-- 数据曲线 -->
-            <path d="M100,350 L250,350 L400,350 L550,350 L700,$((350 - (STARS * 100)))" stroke="#4CAF50" stroke-width="3" fill="none"/>
+            <path d="$POINTS" stroke="#4CAF50" stroke-width="3" fill="none"/>
             
             <!-- 数据点 -->
-            <circle cx="100" cy="350" r="5" fill="#4CAF50"/>
-            <circle cx="250" cy="350" r="5" fill="#4CAF50"/>
-            <circle cx="400" cy="350" r="5" fill="#4CAF50"/>
-            <circle cx="550" cy="350" r="5" fill="#4CAF50"/>
-            <circle cx="700" cy="$((350 - (STARS * 100)))" r="5" fill="#4CAF50"/>
+            $DATA_CIRCLES
             
             <!-- 图例 -->
             <rect x="600" y="80" width="15" height="10" fill="#4CAF50"/>
@@ -91,11 +174,11 @@ jobs:
           </svg>
           EOF
 
-      # 3. 如果图片有变化，自动提交到仓库
+      # 3. 如果图片或历史数据有变化，自动提交到仓库
       - name: Commit and Push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add star-history.svg
+          git add star-history.svg .star-history.json
           git diff --cached --quiet || git commit -m "chore: update star history chart"
           git push
