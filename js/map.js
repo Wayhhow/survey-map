@@ -57,13 +57,12 @@ function onEachFeature(feature, layer) {
             highlightedLayer.setStyle(originalStyle);
         }
         
-        // 应用高亮样式
+        // 应用高亮样式 - 只保留加粗和透明度
         const originalStyle = getStyleByType(feature);
         layer.setStyle({
             ...originalStyle,
             weight: originalStyle.weight + 2,
-            opacity: 1,
-            dashArray: '5, 5'
+            opacity: 1
         });
         
         // 保存当前高亮的图层
