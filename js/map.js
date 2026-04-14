@@ -80,4 +80,33 @@ function listenForDataLoad() {
 window.addEventListener('DOMContentLoaded', () => {
     initMap();
     listenForDataLoad();
+    initStatsPanel();
 });
+
+// 初始化统计面板功能
+function initStatsPanel() {
+    const statsPanel = document.getElementById('stats');
+    if (!statsPanel) return;
+    
+    // 点击隐藏统计面板
+    statsPanel.addEventListener('click', function() {
+        this.style.display = 'none';
+    });
+    
+    // 地图移动时显示统计面板
+    if (map) {
+        map.on('move', function() {
+            statsPanel.style.display = 'block';
+        });
+        
+        // 地图缩放时显示统计面板
+        map.on('zoom', function() {
+            statsPanel.style.display = 'block';
+        });
+        
+        // 地图点击时显示统计面板
+        map.on('click', function() {
+            statsPanel.style.display = 'block';
+        });
+    }
+}
