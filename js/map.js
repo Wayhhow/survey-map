@@ -1,5 +1,7 @@
 // 全局地图对象
 let map = null;
+// 当前高亮的图层
+let highlightedLayer = null;
 
 // 初始化地图
 function initMap() {
@@ -42,6 +44,28 @@ function onEachFeature(feature, layer) {
     
     // 绑定 popup
     layer.bindPopup(popupContent);
+    
+    // 保存原始样式
+    layer._originalStyle = getStyleByType(feature);
+    
+    // 绑定点击事件
+    layer.on('click', function() {
+        // 先恢复之前高亮的图层
+        if (highlightedLayer) {
+            highlightedLayer.setStyle(highlightedLayer._originalStyle);
+        }
+        
+        // 应用高亮样式
+        layer.setStyle({
+            ...layer._originalStyle,
+            weight: layer._originalStyle.weight + 2,
+            opacity: 1,
+            dashArray: '5, 5'
+        });
+        
+        // 保存当前高亮的图层
+        highlightedLayer = layer;
+    });
 }
 
 // 渲染线路数据
@@ -81,6 +105,19 @@ window.addEventListener('DOMContentLoaded', () => {
     initMap();
     listenForDataLoad();
     initStatsPanel();
+    
+    // 添加地图点击事件，点击空白处时移除高亮
+    if (map) {
+        map.on('click', function(e) {
+            // 如果点击的不是线路图层
+            if (!e.originalEvent.target.closest('.leaflet-popup-content-wrapper') && !e.originalEvent.target.closest('.leaflet-interactive')) {
+                if (highlightedLayer) {
+                    highlightedLayer.setStyle(highlightedLayer._originalStyle);
+                    highlightedLayer = null;
+                }
+            }
+        });
+    }
 });
 
 // 初始化统计面板功能
