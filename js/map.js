@@ -45,23 +45,23 @@ function onEachFeature(feature, layer) {
     // 绑定 popup
     layer.bindPopup(popupContent);
     
-    // 保存原始样式
-    layer._originalStyle = getStyleByType(feature);
+    // 保存原始 feature 以便重新获取样式
+    layer._feature = feature;
     
     // 绑定点击事件
     layer.on('click', function() {
         // 先恢复之前高亮的图层
         if (highlightedLayer) {
-            highlightedLayer.setStyle({
-                ...highlightedLayer._originalStyle,
-                dashArray: '' // 使用空字符串确保恢复为实线
-            });
+            // 完全重新应用原始样式
+            const originalStyle = getStyleByType(highlightedLayer._feature);
+            highlightedLayer.setStyle(originalStyle);
         }
         
         // 应用高亮样式
+        const originalStyle = getStyleByType(feature);
         layer.setStyle({
-            ...layer._originalStyle,
-            weight: layer._originalStyle.weight + 2,
+            ...originalStyle,
+            weight: originalStyle.weight + 2,
             opacity: 1,
             dashArray: '5, 5'
         });
@@ -115,10 +115,9 @@ window.addEventListener('DOMContentLoaded', () => {
             // 如果点击的不是线路图层
             if (!e.originalEvent.target.closest('.leaflet-popup-content-wrapper') && !e.originalEvent.target.closest('.leaflet-interactive')) {
                 if (highlightedLayer) {
-                    highlightedLayer.setStyle({
-                        ...highlightedLayer._originalStyle,
-                        dashArray: '' // 使用空字符串确保恢复为实线
-                    });
+                    // 完全重新应用原始样式
+                    const originalStyle = getStyleByType(highlightedLayer._feature);
+                    highlightedLayer.setStyle(originalStyle);
                     highlightedLayer = null;
                 }
             }
