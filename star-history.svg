@@ -14,7 +14,8 @@
   
   <!-- X轴刻度 -->
   <line x1="100" y1="350" x2="100" y2="360" stroke="#333333" stroke-width="2"/>
-  <line x1="400" y1="350" x2="400" y2="360" stroke="#333333" stroke-width="2"/>
+  <line x1="300" y1="350" x2="300" y2="360" stroke="#333333" stroke-width="2"/>
+  <line x1="500" y1="350" x2="500" y2="360" stroke="#333333" stroke-width="2"/>
   <line x1="700" y1="350" x2="700" y2="360" stroke="#333333" stroke-width="2"/>
   
   <!-- Y轴刻度 -->
@@ -26,24 +27,25 @@
   
   <!-- 刻度标签 -->
   <text x="100" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">04/10</text>
-  <text x="400" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">04/12</text>
+  <text x="300" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">04/12</text>
+  <text x="500" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">04/13</text>
   <text x="700" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">04/14</text>
   
   <!-- Y轴标签 -->
   <text x="70" y="355" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">0</text>
-  <text x="70" y="280" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">0.5</text>
-  <text x="70" y="205" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">1</text>
-  <text x="70" y="130" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">1.5</text>
-  <text x="70" y="55" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">2</text>
+  <text x="70" y="280" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">1</text>
+  <text x="70" y="205" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">2</text>
+  <text x="70" y="130" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">3</text>
+  <text x="70" y="55" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">4</text>
   
   <!-- 数据曲线 -->
-  <path d="M100,350 L300,250 L500,150 L700,50" stroke="#4CAF50" stroke-width="3" fill="none"/>
+  <path d="M100,350 L300,275 L500,200 L700,200" stroke="#4CAF50" stroke-width="3" fill="none"/>
   
   <!-- 数据点 -->
   <circle cx="100" cy="350" r="5" fill="#4CAF50"/>
-  <circle cx="300" cy="250" r="5" fill="#4CAF50"/>
-  <circle cx="500" cy="150" r="5" fill="#4CAF50"/>
-  <circle cx="700" cy="50" r="5" fill="#4CAF50"/>
+  <circle cx="300" cy="275" r="5" fill="#4CAF50"/>
+  <circle cx="500" cy="200" r="5" fill="#4CAF50"/>
+  <circle cx="700" cy="200" r="5" fill="#4CAF50"/>
   
   <!-- 图例 -->
   <rect x="600" y="80" width="15" height="10" fill="#4CAF50"/>
