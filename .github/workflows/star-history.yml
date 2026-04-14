@@ -183,7 +183,7 @@ jobs:
           fi
           
           # 生成SVG图表
-          cat > star-history.svg << 'SVGEOF'
+          cat > star-history.svg << 'EOF'
           <svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
             <!-- 背景 -->
             <rect width="800" height="400" fill="#ffffff" stroke="#e0e0e0" stroke-width="1"/>
@@ -204,13 +204,13 @@ jobs:
             <line x1="700" y1="350" x2="700" y2="360" stroke="#333333" stroke-width="2"/>
             
             <!-- Y轴刻度 -->
-            SVGEOF
-            
-            # 添加Y轴刻度
-            echo "$Y_TICKS" >> star-history.svg
-            
-            # 继续生成SVG
-            cat >> star-history.svg << SVGEOF
+          EOF
+          
+          # 添加Y轴刻度
+          echo "$Y_TICKS" >> star-history.svg
+          
+          # 继续生成SVG
+          cat >> star-history.svg << EOF
             
             <!-- 刻度标签 -->
             $X_LABELS
@@ -232,7 +232,7 @@ jobs:
             <text x="400" y="320" font-family="Arial" font-size="14" text-anchor="middle" fill="#666666">当前星标数: $STARS</text>
             <text x="400" y="340" font-family="Arial" font-size="12" text-anchor="middle" fill="#999999">图表将通过 GitHub Actions 每 6 小时自动更新</text>
           </svg>
-          SVGEOF
+          EOF
 
       # 3. 如果图片或历史数据有变化，自动提交到仓库
       - name: Commit and Push
