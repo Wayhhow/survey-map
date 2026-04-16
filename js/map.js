@@ -5,8 +5,13 @@ let highlightedLayer = null;
 
 // 初始化地图
 function initMap() {
-    // 创建地图实例
-    map = L.map('map').setView([39.9042, 116.4074], 12); // 默认北京坐标
+    // 创建地图实例，使用Canvas渲染器并设置点击容忍度
+    map = L.map('map', {
+        preferCanvas: true,
+        renderer: L.canvas({
+            tolerance: 10 // 设置点击容忍度为10像素
+        })
+    }).setView([39.9042, 116.4074], 12); // 默认北京坐标
     
     // 添加底图图层（高德地图，支持GCJ-02坐标系）
     L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {

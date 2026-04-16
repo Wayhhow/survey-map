@@ -25,7 +25,7 @@ body {
     top: 10px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.72);
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     padding: 10px 24px;
@@ -33,11 +33,12 @@ body {
     box-shadow:
         0 0.5px 1px rgba(0,0,0,0.04),
         0 2px 4px rgba(0,0,0,0.04),
-        0 8px 16px rgba(0,0,0,0.06);
+        0 8px 16px rgba(0,0,0,0.06),
+        0 0 0 1px rgba(0,0,0,0.02);
     z-index: 1000;
     font-size: 18px;
-    font-weight: 600;
-    color: #1a1a2e;
+    font-weight: 700;
+    color: #121212;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
@@ -47,8 +48,9 @@ body {
     align-items: center;
     gap: 10px;
     letter-spacing: 0.5px;
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.7);
     animation: slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 #title::after {
@@ -82,7 +84,7 @@ body {
     position: fixed;
     bottom: 25px;
     right: 5px;
-    background: rgba(255, 255, 255, 0.68);
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     padding: 14px 16px;
@@ -90,23 +92,24 @@ body {
     box-shadow:
         0 0.5px 1px rgba(0,0,0,0.04),
         0 2px 4px rgba(0,0,0,0.04),
-        0 8px 16px rgba(0,0,0,0.06);
+        0 8px 16px rgba(0,0,0,0.06),
+        0 0 0 1px rgba(0,0,0,0.02);
     z-index: 1000;
     max-width: 220px;
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.7);
     border-left: 3px solid #4CAF50;
     animation: slideLeft 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
 }
 
 #stats.hidden {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 1px 2px rgba(0,0,0,0.02);
     border-left-color: transparent;
-    border-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
 #stats h3 {
@@ -159,6 +162,7 @@ body {
         0 12px 24px rgba(0,0,0,0.08) !important;
     padding: 0 !important;
     overflow: hidden;
+    animation: popupFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .leaflet-popup-content {
@@ -167,8 +171,31 @@ body {
     padding: 0 !important;
 }
 
-.popup-accent {
-    padding: 14px 16px;
+.leaflet-popup-tip {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+    animation: popupTipFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes popupFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes popupTipFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .popup-accent h3 {
@@ -207,7 +234,7 @@ body {
     position: fixed;
     bottom: 10px;
     left: 10px;
-    background: rgba(255, 255, 255, 0.72);
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     padding: 8px 12px;
@@ -215,14 +242,15 @@ body {
     box-shadow:
         0 0.5px 1px rgba(0,0,0,0.04),
         0 2px 4px rgba(0,0,0,0.04),
-        0 8px 16px rgba(0,0,0,0.06);
+        0 8px 16px rgba(0,0,0,0.06),
+        0 0 0 1px rgba(0,0,0,0.02);
     z-index: 1000;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 4px;
     max-width: 100px;
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.7);
     animation: slideRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
 }
 
@@ -310,6 +338,14 @@ body {
 
 .leaflet-interactive {
     cursor: pointer;
+    stroke-dasharray: 10;
+    animation: dash 30s linear infinite;
+}
+
+@keyframes dash {
+    to {
+        stroke-dashoffset: -1000;
+    }
 }
 
 #loading {
@@ -319,8 +355,8 @@ body {
     width: 100%;
     height: 100%;
     background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     z-index: 2000;
     display: flex;
     flex-direction: column;
@@ -398,12 +434,13 @@ body {
     box-shadow:
         0 0.5px 1px rgba(0,0,0,0.04),
         0 8px 16px rgba(0,0,0,0.08),
-        0 24px 48px rgba(0,0,0,0.12);
+        0 24px 48px rgba(0,0,0,0.12),
+        0 0 0 1px rgba(0,0,0,0.02);
     max-width: 500px;
     width: 90%;
     max-height: 80vh;
     overflow-y: auto;
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.7);
     animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -503,12 +540,22 @@ body {
     font-size: 13px;
     font-weight: 500;
     transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .github-btn:hover {
     background: #2b3137;
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.github-btn svg {
+    transition: transform 0.3s ease;
+}
+
+.github-btn:hover svg {
+    transform: scale(1.1) rotate(5deg);
 }
 
 .modal-footer {
@@ -616,6 +663,7 @@ body {
         top: 5px;
         gap: 8px;
         border-radius: 10px;
+        background: rgba(255, 255, 255, 0.9);
     }
 
     #title::after {
@@ -635,12 +683,12 @@ body {
         left: auto;
         max-width: 220px;
         padding: 10px 12px;
-        background: rgba(255, 255, 255, 0.68);
+        background: rgba(255, 255, 255, 0.85);
         border-radius: 10px;
     }
 
     #stats.hidden {
-        background: rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.15);
         box-shadow: 0 1px 2px rgba(0,0,0,0.02);
     }
 
@@ -650,6 +698,7 @@ body {
         padding: 6px 10px;
         max-width: 80px;
         border-radius: 10px;
+        background: rgba(255, 255, 255, 0.85);
     }
 
     #github-link a {
@@ -670,5 +719,28 @@ body {
         height: 30px !important;
         line-height: 30px !important;
         font-size: 14px !important;
+    }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+    #title {
+        font-size: 14px;
+        padding: 6px 16px;
+        top: 3px;
+    }
+
+    #stats {
+        bottom: 15px;
+        padding: 10px 12px;
+        max-width: 180px;
+    }
+
+    #github-link {
+        bottom: 5px;
+        padding: 4px 8px;
+    }
+
+    .modal-content {
+        max-height: 70vh;
     }
 }
