@@ -338,6 +338,9 @@ body {
 
 .leaflet-interactive {
     cursor: pointer;
+}
+
+.animated-line {
     stroke-dasharray: 10;
     animation: dash 30s linear infinite;
 }

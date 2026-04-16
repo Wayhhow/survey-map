@@ -28,7 +28,14 @@ function getStyleByType(feature) {
     if (!typesConfig) return {};
     
     const type = feature.properties.type || '未勘测';
-    return typesConfig[type] || typesConfig['未勘测'] || {};
+    const style = typesConfig[type] || typesConfig['未勘测'] || {};
+    
+    // 添加动效属性
+    return {
+        ...style,
+        dashArray: '10',
+        className: 'animated-line'
+    };
 }
 
 // 绑定线路点击事件
