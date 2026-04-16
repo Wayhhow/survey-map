@@ -519,17 +519,21 @@ body {
     font-size: 13px;
     color: #555;
     line-height: 1.6;
-    padding-left: 18px;
+    padding-left: 16px;
     position: relative;
     margin-bottom: 6px;
 }
 
 .welcome-section li::before {
-    content: '\u2022';
+    content: '';
     position: absolute;
     left: 0;
-    color: #FF6B35;
-    font-weight: bold;
+    top: 9px;
+    width: 6px;
+    height: 6px;
+    background: #FF6B35;
+    border-radius: 50%;
+    flex-shrink: 0;
 }
 
 .github-btn {
