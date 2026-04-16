@@ -214,10 +214,6 @@ body {
     line-height: 1.6;
 }
 
-.leaflet-popup-tip {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
-}
-
 .leaflet-popup-close-button {
     color: #aaa !important;
     font-size: 20px !important;
@@ -251,7 +247,7 @@ body {
     gap: 4px;
     max-width: 100px;
     border: 1px solid rgba(255, 255, 255, 0.7);
-    animation: slideRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
+    animation: slideRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;        
 }
 
 #github-link a {
@@ -340,20 +336,19 @@ body {
     cursor: pointer;
 }
 
-.animated-line {
-    stroke-dasharray: 10;
-    stroke-dashoffset: 0;
-    animation: dash 3s linear infinite;
-    animation-fill-mode: forwards;
-    animation-play-state: running;
+/* SVG路径上的流动虚线动画 */
+.leaflet-overlay-pane path.leaflet-interactive {
+    stroke-dasharray: 12;
+    animation: dashFlow 1.5s linear infinite;
+    stroke-linecap: round;
 }
 
-@keyframes dash {
+@keyframes dashFlow {
     from {
-        stroke-dashoffset: 0;
+        stroke-dashoffset: 24;
     }
     to {
-        stroke-dashoffset: -100;
+        stroke-dashoffset: 0;
     }
 }
 
@@ -530,7 +525,7 @@ body {
 }
 
 .welcome-section li::before {
-    content: '•';
+    content: '\u2022';
     position: absolute;
     left: 0;
     color: #FF6B35;
