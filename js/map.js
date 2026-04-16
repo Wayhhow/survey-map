@@ -1,6 +1,6 @@
 // 全局地图对象
 let map = null;
-// 当前高亮的图层
+// 当前高亮的图层（单条线路）
 let highlightedLayer = null;
 
 // 初始化地图
@@ -66,6 +66,11 @@ function onEachFeature(feature, layer) {
     hitAreaLayer.on('click', function(e) {
         L.DomEvent.stopPropagation(e);
         
+        // 先清除按类型的高亮
+        if (typeof clearTypeHighlight === 'function' && highlightedType) {
+            clearTypeHighlight();
+        }
+        
         if (highlightedLayer) {
             const originalStyle = getStyleByType(highlightedLayer._feature);
             highlightedLayer.setStyle(originalStyle);
@@ -86,14 +91,14 @@ function onEachFeature(feature, layer) {
     });
     
     hitAreaLayer.on('mouseover', function() {
-        if (highlightedLayer !== layer) {
+        if (highlightedLayer !== layer && !highlightedType) {
             const style = getStyleByType(feature);
             layer.setStyle({ weight: style.weight + 1, dashArray: '10' });
         }
     });
     
     hitAreaLayer.on('mouseout', function() {
-        if (highlightedLayer !== layer) {
+        if (highlightedLayer !== layer && !highlightedType) {
             layer.setStyle(getStyleByType(feature));
         }
     });
@@ -180,7 +185,11 @@ window.addEventListener('DOMContentLoaded', () => {
     // 添加地图点击事件，点击空白处时移除高亮
     if (map) {
         map.on('click', function(e) {
-            if (!e.originalEvent.target.closest('.leaflet-popup-content-wrapper') && !e.originalEvent.target.closest('.leaflet-interactive')) {
+            if (!e.originalEvent.target.closest('.leaflet-popup-content-wrapper') && 
+                !e.originalEvent.target.closest('.leaflet-interactive') &&
+                !e.originalEvent.target.closest('.type-stat-item')) {
+                
+                // 清除单条线路高亮
                 if (highlightedLayer) {
                     const originalStyle = getStyleByType(highlightedLayer._feature);
                     highlightedLayer.setStyle(originalStyle);
@@ -188,6 +197,11 @@ window.addEventListener('DOMContentLoaded', () => {
                         highlightedLayer._hitArea.setStyle({ color: 'transparent', weight: 20, opacity: 0 });
                     }
                     highlightedLayer = null;
+                }
+                
+                // 清除按类型高亮
+                if (typeof clearTypeHighlight === 'function' && highlightedType) {
+                    clearTypeHighlight();
                 }
             }
         });
@@ -199,8 +213,12 @@ function initStatsPanel() {
     const statsPanel = document.getElementById('stats');
     if (!statsPanel) return;
     
-    // 点击切换统计面板透明度
-    statsPanel.addEventListener('click', function() {
+    // 点击面板非类型项区域时切换透明度
+    statsPanel.addEventListener('click', function(e) {
+        // 如果点击的是类型统计项，不执行透明度切换（由data.js处理）
+        if (e.target.closest('.type-stat-item')) {
+            return;
+        }
         this.classList.toggle('hidden');
     });
     
