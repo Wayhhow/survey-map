@@ -5,6 +5,8 @@ let stats = {
     totalLength: 0,
     typeStats: {}
 };
+// 当前按类型高亮的状态
+let highlightedType = null;
 
 // 加载类型配置
 async function loadTypesConfig() {
@@ -91,6 +93,74 @@ function calculateStats() {
     stats.typeStats = typeStats;
 }
 
+// 按类型高亮线路（供外部调用）
+function highlightRoutesByType(type) {
+    if (!window.routesLayer) return;
+    
+    // 先清除之前的高亮
+    clearTypeHighlight();
+    
+    highlightedType = type;
+    
+    window.routesLayer.eachLayer(function(layer) {
+        if (layer._feature) {
+            const layerType = layer._feature.properties.type || '未勘测';
+            if (layerType === type) {
+                const style = typesConfig[type] || {};
+                layer.setStyle({
+                    ...style,
+                    weight: (style.weight || 4) + 3,
+                    opacity: 1,
+                    dashArray: '10'
+                });
+                if (layer._hitArea) {
+                    layer._hitArea.setStyle({ color: 'transparent', weight: 20, opacity: 0 });
+                }
+            } else {
+                layer.setStyle({
+                    weight: 1,
+                    opacity: 0.25,
+                    dashArray: '6'
+                });
+                if (layer._hitArea) {
+                    layer._hitArea.setStyle({ color: 'transparent', weight: 20, opacity: 0 });
+                }
+            }
+        }
+    });
+    
+    // 更新统计面板的选中状态
+    document.querySelectorAll('.type-stat-item').forEach(item => {
+        if (item.dataset.type === type) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
+    });
+}
+
+// 清除按类型的高亮
+function clearTypeHighlight() {
+    if (!window.routesLayer) return;
+    
+    highlightedType = null;
+    
+    window.routesLayer.eachLayer(function(layer) {
+        if (layer._feature) {
+            const originalStyle = getStyleByType(layer._feature);
+            layer.setStyle(originalStyle);
+            if (layer._hitArea) {
+                layer._hitArea.setStyle({ color: 'transparent', weight: 20, opacity: 0 });
+            }
+        }
+    });
+    
+    // 移除所有选中状态
+    document.querySelectorAll('.type-stat-item').forEach(item => {
+        item.classList.remove('active');
+    });
+}
+
 // 更新统计显示
 function updateStatsDisplay() {
     // 更新总长度
@@ -109,10 +179,24 @@ function updateStatsDisplay() {
             
             const statItem = document.createElement('div');
             statItem.className = 'type-stat-item';
+            statItem.dataset.type = type;
             statItem.innerHTML = `
                 <div class="type-color" style="background-color: ${color}"></div>
                 <span>${type}: ${length.toFixed(2)} 公里</span>
             `;
+            
+            // 点击事件：按类型高亮线路
+            statItem.addEventListener('click', function(e) {
+                e.stopPropagation();
+                
+                // 如果已经高亮了该类型，则取消高亮；否则高亮该类型
+                if (highlightedType === type) {
+                    clearTypeHighlight();
+                } else {
+                    highlightRoutesByType(type);
+                }
+            });
+            
             typeStatsElement.appendChild(statItem);
         });
     }
