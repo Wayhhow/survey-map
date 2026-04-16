@@ -342,12 +342,18 @@ body {
 
 .animated-line {
     stroke-dasharray: 10;
-    animation: dash 30s linear infinite;
+    stroke-dashoffset: 0;
+    animation: dash 3s linear infinite;
+    animation-fill-mode: forwards;
+    animation-play-state: running;
 }
 
 @keyframes dash {
+    from {
+        stroke-dashoffset: 0;
+    }
     to {
-        stroke-dashoffset: -1000;
+        stroke-dashoffset: -100;
     }
 }
 
