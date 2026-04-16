@@ -5,13 +5,8 @@ let highlightedLayer = null;
 
 // 初始化地图
 function initMap() {
-    // 创建地图实例，使用Canvas渲染器并设置点击容忍度
-    map = L.map('map', {
-        preferCanvas: true,
-        renderer: L.canvas({
-            tolerance: 10 // 设置点击容忍度为10像素
-        })
-    }).setView([39.9042, 116.4074], 12); // 默认北京坐标
+    // 使用默认SVG渲染器（支持CSS动画）
+    map = L.map('map').setView([39.9042, 116.4074], 12); // 默认北京坐标
     
     // 添加底图图层（高德地图，支持GCJ-02坐标系）
     L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {
@@ -30,11 +25,10 @@ function getStyleByType(feature) {
     const type = feature.properties.type || '未勘测';
     const style = typesConfig[type] || typesConfig['未勘测'] || {};
     
-    // 添加动效属性
     return {
         ...style,
         dashArray: '10',
-        className: 'animated-line'
+        lineCap: 'round'
     };
 }
 
@@ -57,16 +51,29 @@ function onEachFeature(feature, layer) {
     // 保存原始 feature 以便重新获取样式
     layer._feature = feature;
     
-    // 绑定点击事件
-    layer.on('click', function() {
-        // 先恢复之前高亮的图层
+    // 添加透明点击区域叠加层（扩大点击范围）
+    const baseStyle = getStyleByType(feature);
+    const hitAreaLayer = L.polyline(layer.getLatLngs(), {
+        color: 'transparent',
+        weight: 20,
+        opacity: 0,
+        interactive: true
+    });
+    hitAreaLayer.addTo(map);
+    layer._hitArea = hitAreaLayer;
+    
+    // 将点击和悬停事件绑定到透明叠加层上
+    hitAreaLayer.on('click', function(e) {
+        L.DomEvent.stopPropagation(e);
+        
         if (highlightedLayer) {
-            // 完全重新应用原始样式
             const originalStyle = getStyleByType(highlightedLayer._feature);
             highlightedLayer.setStyle(originalStyle);
+            if (highlightedLayer._hitArea) {
+                highlightedLayer._hitArea.setStyle({ color: 'transparent', weight: 20, opacity: 0 });
+            }
         }
         
-        // 应用高亮样式 - 只保留加粗和透明度
         const originalStyle = getStyleByType(feature);
         layer.setStyle({
             ...originalStyle,
@@ -74,18 +81,18 @@ function onEachFeature(feature, layer) {
             opacity: 1
         });
         
-        // 保存当前高亮的图层
         highlightedLayer = layer;
+        layer.openPopup();
     });
-
-    layer.on('mouseover', function() {
+    
+    hitAreaLayer.on('mouseover', function() {
         if (highlightedLayer !== layer) {
             const style = getStyleByType(feature);
-            layer.setStyle({ weight: style.weight + 1 });
+            layer.setStyle({ weight: style.weight + 1, dashArray: '10' });
         }
     });
-
-    layer.on('mouseout', function() {
+    
+    hitAreaLayer.on('mouseout', function() {
         if (highlightedLayer !== layer) {
             layer.setStyle(getStyleByType(feature));
         }
@@ -173,12 +180,13 @@ window.addEventListener('DOMContentLoaded', () => {
     // 添加地图点击事件，点击空白处时移除高亮
     if (map) {
         map.on('click', function(e) {
-            // 如果点击的不是线路图层
             if (!e.originalEvent.target.closest('.leaflet-popup-content-wrapper') && !e.originalEvent.target.closest('.leaflet-interactive')) {
                 if (highlightedLayer) {
-                    // 完全重新应用原始样式
                     const originalStyle = getStyleByType(highlightedLayer._feature);
                     highlightedLayer.setStyle(originalStyle);
+                    if (highlightedLayer._hitArea) {
+                        highlightedLayer._hitArea.setStyle({ color: 'transparent', weight: 20, opacity: 0 });
+                    }
                     highlightedLayer = null;
                 }
             }
