@@ -211,6 +211,7 @@ body {
 
 .popup-accent {
     padding: 16px 18px 14px;
+    position: relative;
 }
 
 .popup-accent h3 {
@@ -219,6 +220,7 @@ body {
     font-size: 15px;
     font-weight: 600;
     padding-bottom: 8px;
+    padding-right: 28px;
     border-bottom: 1px solid #f0f0f0;
     line-height: 1.4;
     word-break: break-word;
