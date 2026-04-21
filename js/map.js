@@ -43,7 +43,25 @@ function onEachFeature(feature, layer) {
     
     const type = feature.properties.type || '未勘测';
     const typeColor = typesConfig && typesConfig[type] ? typesConfig[type].color : '#9E9E9E';
-    const popupContent = '<div class="popup-accent" style="border-top:3px solid ' + typeColor + '"><h3>' + (feature.properties.name || '未命名线路') + '</h3><p>类型: ' + type + '</p><p>长度: ' + length.toFixed(2) + ' 公里</p></div>';
+    const routeName = feature.properties.name || '未命名线路';
+
+    let popupContent = '<div class="popup-accent" style="border-top:3px solid ' + typeColor + '">';
+    popupContent += '<h3>' + routeName + '</h3>';
+    popupContent += '<p>类型: ' + type + '</p>';
+    popupContent += '<p>长度: ' + length.toFixed(2) + ' 公里</p>';
+
+    // 获取外部 CSV 数据
+    if (typeof routeDetailsData !== 'undefined' && routeDetailsData[routeName]) {
+        const details = routeDetailsData[routeName];
+        if (details.date) {
+            popupContent += '<p>勘测日期: ' + details.date + '</p>';
+        }
+        if (details.spots) {
+            popupContent += '<p>无障碍不规范点: ' + details.spots + '</p>';
+        }
+    }
+
+    popupContent += '</div>';
     
     // 绑定 popup
     layer.bindPopup(popupContent);
