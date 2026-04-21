@@ -4,6 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const { kml } = require('@mapbox/togeojson');
 const { DOMParser } = require('xmldom');
+const { parse } = require('csv-parse/sync');
+const { stringify } = require('csv-stringify/sync');
 
 // 命令行参数
 const args = process.argv.slice(2);
@@ -96,13 +98,62 @@ fs.readFile(inputPath, 'utf8', (err, data) => {
         }
         
         // 写入 GeoJSON 文件
-        fs.writeFile(outputPath, JSON.stringify(geojson, null, 2), (err) => {
-            if (err) {
-                console.error('写入 GeoJSON 文件失败:', err);
-                process.exit(1);
+        fs.writeFileSync(outputPath, JSON.stringify(geojson, null, 2));
+        console.log(`转换成功！输出文件: ${outputPath}`);
+
+        // 处理 CSV 文件
+        const csvPath = path.join(path.dirname(outputPath), 'route_details.csv');
+        let existingRecords = [];
+
+        // 读取已存在的 CSV 文件
+        if (fs.existsSync(csvPath)) {
+            const csvData = fs.readFileSync(csvPath, 'utf8');
+            existingRecords = parse(csvData, { columns: true, skip_empty_lines: true });
+        }
+
+        // 收集所有路线的名称
+        const currentRouteNames = new Set();
+        geojson.features.forEach(feature => {
+            if (feature.properties && feature.properties.name) {
+                currentRouteNames.add(feature.properties.name);
             }
-            console.log(`转换成功！输出文件: ${outputPath}`);
         });
+
+        // 查找在 GeoJSON 中但不在 CSV 中的路线
+        const existingNames = new Set(existingRecords.map(record => record['名称'] || record['name'] || record['Name']));
+
+        let newRecordsCount = 0;
+        currentRouteNames.forEach(name => {
+            if (!existingNames.has(name)) {
+                existingRecords.push({
+                    '名称': name,
+                    '勘测日期': '',
+                    '无障碍不规范点': ''
+                });
+                newRecordsCount++;
+            }
+        });
+
+        // 如果没有任何记录，可能是一个全新的文件，添加列头
+        if (existingRecords.length === 0) {
+            currentRouteNames.forEach(name => {
+                existingRecords.push({
+                    '名称': name,
+                    '勘测日期': '',
+                    '无障碍不规范点': ''
+                });
+                newRecordsCount++;
+            });
+        }
+
+        if (newRecordsCount > 0 || !fs.existsSync(csvPath)) {
+            const csvOutput = stringify(existingRecords, { header: true, columns: ['名称', '勘测日期', '无障碍不规范点'] });
+            fs.writeFileSync(csvPath, csvOutput);
+            console.log(`成功更新路线详情 CSV 文件！新增了 ${newRecordsCount} 条路线记录。输出文件: ${csvPath}`);
+        } else {
+            console.log(`CSV 文件无需更新，没有发现新的路线。`);
+        }
+
     } catch (error) {
         console.error('转换过程出错:', error);
         process.exit(1);

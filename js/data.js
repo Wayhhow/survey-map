@@ -1,12 +1,48 @@
 // 全局变量存储数据
 let routesData = null;
 let typesConfig = null;
+let routeDetailsData = {}; // 存储路线详情 (CSV)
 let stats = {
     totalLength: 0,
     typeStats: {}
 };
 // 当前按类型高亮的状态
 let highlightedType = null;
+
+// 加载路线详情 (CSV)
+async function loadRouteDetails() {
+    return new Promise((resolve, reject) => {
+        if (typeof Papa === 'undefined') {
+            console.warn('PapaParse is not loaded. Route details will not be available.');
+            resolve();
+            return;
+        }
+
+        Papa.parse('data/route_details.csv', {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                console.log('路线详情 CSV 加载成功:', results.data);
+                results.data.forEach(row => {
+                    const name = row['名称'] || row['name'] || row['Name'];
+                    if (name) {
+                        routeDetailsData[name] = {
+                            date: row['勘测日期'] || '',
+                            spots: row['无障碍不规范点'] || ''
+                        };
+                    }
+                });
+                resolve();
+            },
+            error: function(err) {
+                console.error('路线详情 CSV 加载失败:', err);
+                // 不阻塞页面加载
+                resolve();
+            }
+        });
+    });
+}
 
 // 加载类型配置
 async function loadTypesConfig() {
@@ -205,6 +241,7 @@ function updateStatsDisplay() {
 // 初始化数据加载
 async function initData() {
     await loadTypesConfig();
+    await loadRouteDetails();
     await loadRoutesData();
 }
 
