@@ -25,9 +25,10 @@
 - **类型区分**: 点击统计面板中的类型可高亮对应线路，不同类型以不同颜色显示（已勘测/待勘测）
 - **长度统计**: 实时计算并显示线路总长度和各类型长度
 - **交互功能**: 点击线路查看详细信息（名称、类型、长度）；点击统计面板类型可筛选高亮
+- **勘测详情展示**: 点击线路可查看勘测日期、无障碍不规范点数量等详情（从 CSV 自动加载）
 - **自动适配**: 地图自动调整视图以显示所有线路
 - **响应式设计**: 支持桌面和移动设备
-- **实时更新**: 通过 GitHub Actions 自动部署和更新
+- **实时更新**: 通过 GitHub Actions 自动部署；支持 KML/GeoJSON 转 CSV 自动提取新路线
 
 ## 🌐 快速访问
 
@@ -194,6 +195,14 @@ node convert-kml.js input.kml data/routes.geojson
 
 **Wayhhow**
 - GitHub: [@Wayhhow](https://github.com/Wayhhow)
+
+## ☕ 请我喝瓶水
+
+如果你觉得这个项目有帮助，欢迎通过爱发电支持我：
+
+<a href="https://ifdian.net/a/Wayhhow" target="_blank">
+  <img src="https://img.shields.io/badge/❤️_爱发电-Wayhhow-red" alt="爱发电">
+</a>
 
 ## ⭐ Star History
 
