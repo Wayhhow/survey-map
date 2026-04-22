@@ -2,9 +2,11 @@
 let routesData = null;
 let typesConfig = null;
 let routeDetailsData = {}; // 存储路线详情 (CSV)
+let allRouteDetails = []; // 存储所有路线详情，用于计算统计数据
 let stats = {
     totalLength: 0,
-    typeStats: {}
+    typeStats: {},
+    totalSpots: 0 // 总不规范点数目
 };
 // 当前按类型高亮的状态
 let highlightedType = null;
@@ -24,6 +26,7 @@ async function loadRouteDetails() {
             skipEmptyLines: true,
             complete: function(results) {
                 console.log('路线详情 CSV 加载成功:', results.data);
+                allRouteDetails = results.data;
                 results.data.forEach(row => {
                     const name = row['名称'] || row['name'] || row['Name'];
                     if (name) {
@@ -103,6 +106,7 @@ function calculateStats() {
     
     let totalLength = 0;
     const typeStats = {};
+    let totalSpots = 0;
     
     // 初始化类型统计
     Object.keys(typesConfig).forEach(type => {
@@ -125,8 +129,21 @@ function calculateStats() {
         }
     });
     
+    // 计算总不规范点数目
+    allRouteDetails.forEach(row => {
+        const spots = row['无障碍不规范点'] || '';
+        if (spots) {
+            // 提取数字部分，例如 "10 spots" -> 10
+            const match = spots.match(/\d+/);
+            if (match) {
+                totalSpots += parseInt(match[0]);
+            }
+        }
+    });
+    
     stats.totalLength = totalLength;
     stats.typeStats = typeStats;
+    stats.totalSpots = totalSpots;
 }
 
 // 按类型高亮线路（供外部调用）
@@ -203,6 +220,12 @@ function updateStatsDisplay() {
     const totalLengthElement = document.getElementById('total-length');
     if (totalLengthElement) {
         totalLengthElement.innerHTML = `总长度: ${stats.totalLength.toFixed(2)} 公里`;
+    }
+    
+    // 更新总不规范点数目
+    const totalSpotsElement = document.getElementById('total-spots');
+    if (totalSpotsElement) {
+        totalSpotsElement.innerHTML = `总不规范点: ${stats.totalSpots} 处`;
     }
     
     // 更新类型统计
