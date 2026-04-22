@@ -2,7 +2,7 @@
 let routesData = null;
 let typesConfig = null;
 let routeDetailsData = {}; // 存储路线详情 (CSV)
-let allRouteDetails = []; // 存储所有路线详情，用于计算统计数据
+let allRouteDetails = []; // 存储所有路线详情，用于计算统计数据  
 let stats = {
     totalLength: 0,
     typeStats: {},
@@ -25,10 +25,10 @@ async function loadRouteDetails() {
             header: true,
             skipEmptyLines: true,
             complete: function(results) {
-                console.log('路线详情 CSV 加载成功:', results.data);
+                console.log('路线详情 CSV 加载成功:', results.data);     
                 allRouteDetails = results.data;
                 results.data.forEach(row => {
-                    const name = row['名称'] || row['name'] || row['Name'];
+                    const name = row['名称'] || row['name'] || row['Name'];    
                     if (name) {
                         routeDetailsData[name] = {
                             date: row['勘测日期'] || '',
@@ -40,7 +40,7 @@ async function loadRouteDetails() {
             },
             error: function(err) {
                 console.error('路线详情 CSV 加载失败:', err);
-                // 不阻塞页面加载
+                // 不阻断页面加载
                 resolve();
             }
         });
@@ -57,29 +57,29 @@ async function loadTypesConfig() {
         console.error('类型配置加载失败:', error);
         // 默认配置
         typesConfig = {
-            "已勘测": { "color": "#4CAF50", "weight": 4, "opacity": 0.8 },
-            "未勘测": { "color": "#9E9E9E", "weight": 3, "opacity": 0.6 }
+            "已勘测": { "color": "#4CAF50", "weight": 4, "opacity": 0.8 },    
+            "待勘测": { "color": "#9E9E9E", "weight": 3, "opacity": 0.6 }      
         };
     }
 }
 
-// 加载线路数据
+// 加载路线数据
 async function loadRoutesData() {
     try {
         const response = await fetch('data/routes.geojson');
         routesData = await response.json();
-        console.log('线路数据加载成功:', routesData);
+        console.log('路线数据加载成功:', routesData);
         calculateStats();
         updateStatsDisplay();
     } catch (error) {
-        console.error('线路数据加载失败:', error);
+        console.error('路线数据加载失败:', error);
         // 创建示例数据
         routesData = {
             "type": "FeatureCollection",
             "features": [
                 {
                     "type": "Feature",
-                    "properties": { "name": "示例线路1", "type": "已勘测" },
+                    "properties": { "name": "示例路线1", "type": "已勘测" },
                     "geometry": {
                         "type": "LineString",
                         "coordinates": [[116.3974, 39.9093], [116.4100, 39.9100], [116.4200, 39.9080]]
@@ -87,7 +87,7 @@ async function loadRoutesData() {
                 },
                 {
                     "type": "Feature",
-                    "properties": { "name": "示例线路2", "type": "未勘测" },
+                    "properties": { "name": "示例路线2", "type": "待勘测" },
                     "geometry": {
                         "type": "LineString",
                         "coordinates": [[116.3800, 39.9000], [116.3900, 39.8900], [116.4000, 39.8800]]
@@ -103,61 +103,61 @@ async function loadRoutesData() {
 // 计算统计数据
 function calculateStats() {
     if (!routesData || !routesData.features) return;
-    
+
     let totalLength = 0;
     const typeStats = {};
     let totalSpots = 0;
-    
+
     // 初始化类型统计
-    Object.keys(typesConfig).forEach(type => {
+    Object.keys(typesConfig).forEach(type => {       
         typeStats[type] = 0;
     });
-    
-    // 计算每条线路的长度
-    routesData.features.forEach(feature => {
+
+    // 计算每条路线的长度
+    routesData.features.forEach(feature => {  
         if (feature.geometry.type === 'LineString') {
             const line = turf.lineString(feature.geometry.coordinates);
             const length = turf.length(line, { units: 'kilometers' });
             totalLength += length;
-            
+
             // 按类型统计
-            const type = feature.properties.type || '未勘测';
+            const type = feature.properties.type || '待勘测';
             if (!typeStats[type]) {
                 typeStats[type] = 0;
             }
             typeStats[type] += length;
         }
     });
-    
+
     // 计算总不规范点数目
     allRouteDetails.forEach(row => {
         const spots = row['无障碍不规范点'] || '';
         if (spots) {
-            // 提取数字部分，例如 "10 spots" -> 10
+            // 提取数字部分，例如"10 spots" -> 10
             const match = spots.match(/\d+/);
             if (match) {
                 totalSpots += parseInt(match[0]);
             }
         }
     });
-    
+
     stats.totalLength = totalLength;
     stats.typeStats = typeStats;
     stats.totalSpots = totalSpots;
 }
 
-// 按类型高亮线路（供外部调用）
+// 按类型高亮路线(外部调用)
 function highlightRoutesByType(type) {
     if (!window.routesLayer) return;
-    
+
     // 先清除之前的高亮
     clearTypeHighlight();
-    
+
     highlightedType = type;
-    
+
     window.routesLayer.eachLayer(function(layer) {
         if (layer._feature) {
-            const layerType = layer._feature.properties.type || '未勘测';
+            const layerType = layer._feature.properties.type || '待勘测';      
             if (layerType === type) {
                 const style = typesConfig[type] || {};
                 layer.setStyle({
@@ -181,7 +181,7 @@ function highlightRoutesByType(type) {
             }
         }
     });
-    
+
     // 更新统计面板的选中状态
     document.querySelectorAll('.type-stat-item').forEach(item => {
         if (item.dataset.type === type) {
@@ -195,9 +195,9 @@ function highlightRoutesByType(type) {
 // 清除按类型的高亮
 function clearTypeHighlight() {
     if (!window.routesLayer) return;
-    
+
     highlightedType = null;
-    
+
     window.routesLayer.eachLayer(function(layer) {
         if (layer._feature) {
             const originalStyle = getStyleByType(layer._feature);
@@ -207,8 +207,8 @@ function clearTypeHighlight() {
             }
         }
     });
-    
-    // 移除所有选中状态
+
+    // 清除所有选中状态
     document.querySelectorAll('.type-stat-item').forEach(item => {
         item.classList.remove('active');
     });
@@ -221,13 +221,13 @@ function updateStatsDisplay() {
     if (totalLengthElement) {
         totalLengthElement.innerHTML = `总长度: ${stats.totalLength.toFixed(2)} 公里`;
     }
-    
+
     // 更新总不规范点数目
     const totalSpotsElement = document.getElementById('total-spots');
     if (totalSpotsElement) {
         totalSpotsElement.innerHTML = `总不规范点: ${stats.totalSpots} 处`;
     }
-    
+
     // 更新类型统计
     const typeStatsElement = document.getElementById('type-stats');
     if (typeStatsElement) {
@@ -235,7 +235,7 @@ function updateStatsDisplay() {
         Object.entries(stats.typeStats).forEach(([type, length]) => {
             const typeConfig = typesConfig[type] || {};
             const color = typeConfig.color || '#9E9E9E';
-            
+
             const statItem = document.createElement('div');
             statItem.className = 'type-stat-item';
             statItem.dataset.type = type;
@@ -243,11 +243,11 @@ function updateStatsDisplay() {
                 <div class="type-color" style="background-color: ${color}"></div>
                 <span>${type}: ${length.toFixed(2)} 公里</span>
             `;
-            
-            // 点击事件：按类型高亮线路
+
+            // 点击事件：按类型高亮路线
             statItem.addEventListener('click', function(e) {
                 e.stopPropagation();
-                
+
                 // 如果已经高亮了该类型，则取消高亮；否则高亮该类型
                 if (highlightedType === type) {
                     clearTypeHighlight();
@@ -255,7 +255,7 @@ function updateStatsDisplay() {
                     highlightRoutesByType(type);
                 }
             });
-            
+
             typeStatsElement.appendChild(statItem);
         });
     }

@@ -104,40 +104,57 @@ GitHub Pages 会自动构建和部署你的网站，通常需要 1-2 分钟。�
 
 ## 📊 使用方法
 
+### 🎯 快速开始
+
+1. **准备线路数据**：在 Google My Maps 中绘制线路，按类型分层
+2. **转换文件**：使用转换工具将 KML 转换为 GeoJSON
+3. **更新数据**：替换 `data/routes.geojson` 文件
+4. **提交更改**：推送到 GitHub 自动部署
+
 ### 1. 准备线路数据
 
-1. 在 Google My Maps 中绘制线路，按类型分层
-2. 导出为 KML 文件
-3. 使用转换工具将 KML 转换为 GeoJSON
+1. **创建地图**：在 [Google My Maps](https://www.google.com/maps/d/) 中创建新地图
+2. **绘制线路**：添加线路图层，按类型（已勘测/待勘测）分组
+3. **导出文件**：点击菜单 → 导出为 KML/KMZ 文件
 
 ### 2. 转换 KML 为 GeoJSON
 
 ```bash
-# 安装依赖
+# 安装依赖（首次使用）
 npm install
 
-# 转换 KML 文件
+# 基本转换
 node convert-kml.js input.kml
-# 或指定输出文件
+
+# 自定义输出路径
 node convert-kml.js input.kml data/routes.geojson
 ```
 
 ### 3. 更新线路数据
 
-1. 将转换后的 `routes.geojson` 文件替换到 `data/` 目录
-2. 转换过程会自动更新 `data/route_details.csv` 文件：
-   - 保留已有的手动填写数据（勘测日期、无障碍不规范点）
-   - 自动为新路线添加新行（只添加路线名称，其他字段为空）
-3. 提交并推送更改：
-   ```bash
-   git add data/routes.geojson data/route_details.csv
-   git commit -m "Update routes data"
-   git push origin main
-   ```
+#### 3.1 数据更新流程
+
+1. **替换文件**：将转换后的 `routes.geojson` 文件放入 `data/` 目录
+2. **自动处理**：转换过程会自动更新 `data/route_details.csv` 文件：
+   - ✅ 保留已有的手动填写数据（勘测日期、无障碍不规范点）
+   - ✅ 自动为新路线添加新行（只添加路线名称，其他字段为空）
+
+#### 3.2 提交更改
+
+```bash
+# 提交更新的文件
+git add data/routes.geojson data/route_details.csv
+
+# 提交更改
+git commit -m "Update routes data"
+
+# 推送到 GitHub
+git push origin main
+```
 
 ### 4. 配置类型颜色
 
-编辑 `data/types.json` 文件，配置不同类型线路的颜色和样式：
+编辑 `data/types.json` 文件，配置不同类型线路的样式：
 
 ```json
 {
@@ -155,6 +172,27 @@ node convert-kml.js input.kml data/routes.geojson
   }
 }
 ```
+
+---
+
+### 📋 数据文件说明
+
+| 文件名 | 用途 | 编辑方式 |
+|--------|------|----------|
+| `routes.geojson` | 存储线路地理数据 | 自动生成，勿手动编辑 |
+| `route_details.csv` | 存储线路详细信息 | 可手动编辑，添加勘测日期和不规范点 |
+| `types.json` | 配置线路类型样式 | 可手动编辑，调整颜色和样式 |
+
+### 🔧 常见操作
+
+#### 查看地图
+- 访问：[https://wayhhow.github.io/survey-map/](https://wayhhow.github.io/survey-map/)
+- 首次访问会显示欢迎模态框，可选择"不再显示"
+
+#### 线路管理
+- **添加新线路**：在 Google My Maps 中添加后重新转换
+- **修改线路**：更新 Google My Maps 中的线路后重新转换
+- **删除线路**：从 Google My Maps 中删除后重新转换
 
 ## 👨‍💻 开发指南
 

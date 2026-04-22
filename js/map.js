@@ -1,30 +1,30 @@
 // 全局地图对象
 let map = null;
-// 当前高亮的图层（单条线路）
+// 当前高亮的图层(单条路线)
 let highlightedLayer = null;
 
 // 初始化地图
 function initMap() {
-    // 使用默认SVG渲染器（支持CSS动画）
+    // 使用默认SVG渲染器(支持CSS动画)
     map = L.map('map').setView([39.9042, 116.4074], 12); // 默认北京坐标
-    
-    // 添加底图图层（高德地图，支持GCJ-02坐标系）
+
+    // 添加底图图层(高德地图，支持GCJ-02坐标系)
     L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {
         subdomains: '1234',
         maxZoom: 20,
         attribution: '高德地图'
     }).addTo(map);
-    
+
     console.log('地图初始化完成');
 }
 
 // 根据类型获取样式
 function getStyleByType(feature) {
     if (!typesConfig) return {};
-    
-    const type = feature.properties.type || '未勘测';
-    const style = typesConfig[type] || typesConfig['未勘测'] || {};
-    
+
+    const type = feature.properties.type || '待勘测';
+    const style = typesConfig[type] || typesConfig['待勘测'] || {};
+
     return {
         ...style,
         dashArray: '10',
@@ -32,18 +32,18 @@ function getStyleByType(feature) {
     };
 }
 
-// 绑定线路点击事件
+// 绑定路线点击事件
 function onEachFeature(feature, layer) {
-    // 计算线路长度
+    // 计算路线长度
     let length = 0;
     if (feature.geometry.type === 'LineString') {
         const line = turf.lineString(feature.geometry.coordinates);
         length = turf.length(line, { units: 'kilometers' });
     }
-    
-    const type = feature.properties.type || '未勘测';
+
+    const type = feature.properties.type || '待勘测';
     const typeColor = typesConfig && typesConfig[type] ? typesConfig[type].color : '#9E9E9E';
-    const routeName = feature.properties.name || '未命名线路';
+    const routeName = feature.properties.name || '未命名路线';
 
     let popupContent = '<div class="popup-accent" style="border-top:3px solid ' + typeColor + '">';
     popupContent += '<h3>' + routeName + '</h3>';
@@ -54,7 +54,7 @@ function onEachFeature(feature, layer) {
     if (typeof routeDetailsData !== 'undefined' && routeDetailsData[routeName]) {
         const details = routeDetailsData[routeName];
         if (details.date) {
-            popupContent += '<p>勘测日期: ' + details.date + '</p>';
+            popupContent += '<p>勘测日期: ' + details.date + '</p>';        
         }
         if (details.spots) {
             popupContent += '<p>无障碍不规范点: ' + details.spots + '</p>';
@@ -62,14 +62,14 @@ function onEachFeature(feature, layer) {
     }
 
     popupContent += '</div>';
-    
+
     // 绑定 popup
     layer.bindPopup(popupContent);
-    
+
     // 保存原始 feature 以便重新获取样式
     layer._feature = feature;
-    
-    // 添加透明点击区域叠加层（扩大点击范围）
+
+    // 添加透明点击区域扩展层(增大点击范围)
     const baseStyle = getStyleByType(feature);
     const hitAreaLayer = L.polyline(layer.getLatLngs(), {
         color: 'transparent',
@@ -79,42 +79,42 @@ function onEachFeature(feature, layer) {
     });
     hitAreaLayer.addTo(map);
     layer._hitArea = hitAreaLayer;
-    
-    // 将点击和悬停事件绑定到透明叠加层上
+
+    // 将点击和悬停事件绑定到透明扩展层上
     hitAreaLayer.on('click', function(e) {
         L.DomEvent.stopPropagation(e);
-        
+
         // 先清除按类型的高亮
         if (typeof clearTypeHighlight === 'function' && highlightedType) {
             clearTypeHighlight();
         }
-        
+
         if (highlightedLayer) {
-            const originalStyle = getStyleByType(highlightedLayer._feature);
+            const originalStyle = getStyleByType(highlightedLayer._feature);    
             highlightedLayer.setStyle(originalStyle);
             if (highlightedLayer._hitArea) {
                 highlightedLayer._hitArea.setStyle({ color: 'transparent', weight: 20, opacity: 0 });
             }
         }
-        
+
         const originalStyle = getStyleByType(feature);
         layer.setStyle({
             ...originalStyle,
             weight: originalStyle.weight + 2,
             opacity: 1
         });
-        
+
         highlightedLayer = layer;
         layer.openPopup();
     });
-    
+
     hitAreaLayer.on('mouseover', function() {
         if (highlightedLayer !== layer && !highlightedType) {
             const style = getStyleByType(feature);
-            layer.setStyle({ weight: style.weight + 1, dashArray: '10' });
+            layer.setStyle({ weight: style.weight + 1, dashArray: '10' });      
         }
     });
-    
+
     hitAreaLayer.on('mouseout', function() {
         if (highlightedLayer !== layer && !highlightedType) {
             layer.setStyle(getStyleByType(feature));
@@ -122,22 +122,22 @@ function onEachFeature(feature, layer) {
     });
 }
 
-// 渲染线路数据
+// 渲染路线数据
 function renderRoutes() {
     if (!map || !routesData) return;
-    
-    // 清除已有的线路图层（如果有）
+
+    // 移除已有的路线图层(如果有)
     if (window.routesLayer) {
         map.removeLayer(window.routesLayer);
     }
-    
+
     // 创建 GeoJSON 图层
     window.routesLayer = L.geoJSON(routesData, {
         style: getStyleByType,
         onEachFeature: onEachFeature
     }).addTo(map);
-    
-    // 调整地图视图以显示所有线路
+
+    // 调整地图视图以显示所有路线
     map.fitBounds(window.routesLayer.getBounds(), { padding: [50, 50] });
 
     const loading = document.getElementById('loading');
@@ -146,7 +146,7 @@ function renderRoutes() {
         setTimeout(function() { loading.remove(); }, 600);
     }
 
-    console.log('线路渲染完成');
+    console.log('路线渲染完成');
 }
 
 // 监听数据加载完成事件
@@ -166,7 +166,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
     if (!hasSeenWelcome) {
         setTimeout(() => {
-            const welcomeModal = document.getElementById('welcome-modal');
+            const welcomeModal = document.getElementById('welcome-modal');      
             if (welcomeModal) {
                 welcomeModal.classList.remove('hidden');
             }
@@ -175,7 +175,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // 绑定关闭按钮事件
     const closeWelcome = document.getElementById('close-welcome');
-    const closeWelcomeBtn = document.getElementById('close-welcome-btn');
+    const closeWelcomeBtn = document.getElementById('close-welcome-btn');       
     const welcomeModal = document.getElementById('welcome-modal');
     const dontShowAgain = document.getElementById('dont-show-again');
 
@@ -199,15 +199,15 @@ window.addEventListener('DOMContentLoaded', () => {
     initMap();
     listenForDataLoad();
     initStatsPanel();
-    
-    // 添加地图点击事件，点击空白处时移除高亮
-    if (map) {
+
+    // 添加地图点击事件，点击空白处时取消高亮
+    if (map) {     
         map.on('click', function(e) {
-            if (!e.originalEvent.target.closest('.leaflet-popup-content-wrapper') && 
-                !e.originalEvent.target.closest('.leaflet-interactive') &&
+            if (!e.originalEvent.target.closest('.leaflet-popup-content-wrapper') &&
+                !e.originalEvent.target.closest('.leaflet-interactive') &&      
                 !e.originalEvent.target.closest('.type-stat-item')) {
-                
-                // 清除单条线路高亮
+
+                // 清除单条路线高亮
                 if (highlightedLayer) {
                     const originalStyle = getStyleByType(highlightedLayer._feature);
                     highlightedLayer.setStyle(originalStyle);
@@ -216,7 +216,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     }
                     highlightedLayer = null;
                 }
-                
+
                 // 清除按类型高亮
                 if (typeof clearTypeHighlight === 'function' && highlightedType) {
                     clearTypeHighlight();
@@ -230,28 +230,28 @@ window.addEventListener('DOMContentLoaded', () => {
 function initStatsPanel() {
     const statsPanel = document.getElementById('stats');
     if (!statsPanel) return;
-    
-    // 点击面板非类型项区域时切换透明度
+
+    // 点击面板非类型统计区域时切换显示/隐藏
     statsPanel.addEventListener('click', function(e) {
-        // 如果点击的是类型统计项，不执行透明度切换（由data.js处理）
+        // 如果点击的是类型统计项，不执行显示/隐藏操作(由data.js处理)
         if (e.target.closest('.type-stat-item')) {
             return;
         }
         this.classList.toggle('hidden');
     });
-    
-    // 地图移动时显示统计面板（移除hidden类）
+
+    // 地图移动时显示统计面板(移除hidden类)
     if (map) {
         map.on('move', function() {
             statsPanel.classList.remove('hidden');
         });
-        
-        // 地图缩放时显示统计面板（移除hidden类）
+
+        // 地图缩放时显示统计面板(移除hidden类)
         map.on('zoom', function() {
             statsPanel.classList.remove('hidden');
         });
-        
-        // 地图点击时显示统计面板（移除hidden类）
+
+        // 地图点击时显示统计面板(移除hidden类)
         map.on('click', function() {
             statsPanel.classList.remove('hidden');
         });

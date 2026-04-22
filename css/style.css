@@ -612,6 +612,41 @@ body {
     flex-shrink: 0;
 }
 
+.guide-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: var(--spacing-md);
+}
+
+.guide-item {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    transition: all var(--transition-normal);
+}
+
+.guide-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+    border-color: var(--color-primary);
+}
+
+.guide-item strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+}
+
+.guide-item p {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
+    color: var(--color-text-secondary);
+}
+
 .github-btn {
     display: inline-flex;
     align-items: center;
