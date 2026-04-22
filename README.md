@@ -125,9 +125,12 @@ node convert-kml.js input.kml data/routes.geojson
 ### 3. 更新线路数据
 
 1. 将转换后的 `routes.geojson` 文件替换到 `data/` 目录
-2. 提交并推送更改：
+2. 转换过程会自动更新 `data/route_details.csv` 文件：
+   - 保留已有的手动填写数据（勘测日期、无障碍不规范点）
+   - 自动为新路线添加新行（只添加路线名称，其他字段为空）
+3. 提交并推送更改：
    ```bash
-   git add data/routes.geojson
+   git add data/routes.geojson data/route_details.csv
    git commit -m "Update routes data"
    git push origin main
    ```
