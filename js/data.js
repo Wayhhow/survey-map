@@ -1,272 +1,473 @@
-// 全局变量存储数据
-let routesData = null;
-let typesConfig = null;
-let routeDetailsData = {}; // 存储路线详情 (CSV)
-let allRouteDetails = []; // 存储所有路线详情，用于计算统计数据  
-let stats = {
-    totalLength: 0,
-    typeStats: {},
-    totalSpots: 0 // 总不规范点数目
-};
-// 当前按类型高亮的状态
-let highlightedType = null;
+/**
+ * 数据管理模块
+ * 负责加载和管理地图相关数据，包括路线数据、类型配置和路线详情
+ */
+class DataManager {
+    /**
+     * 构造函数
+     */
+    constructor() {
+        /**
+         * 路线数据 (GeoJSON)
+         * @type {Object|null}
+         */
+        this.routesData = null;
+        
+        /**
+         * 类型配置
+         * @type {Object|null}
+         */
+        this.typesConfig = null;
+        
+        /**
+         * 路线详情数据 (CSV)
+         * @type {Object}
+         */
+        this.routeDetailsData = {};
+        
+        /**
+         * 所有路线详情，用于计算统计数据
+         * @type {Array}
+         */
+        this.allRouteDetails = [];
+        
+        /**
+         * 统计数据
+         * @type {Object}
+         */
+        this.stats = {
+            totalLength: 0,     // 总长度
+            typeStats: {},       // 按类型统计
+            totalSpots: 0        // 总不规范点数目
+        };
+        
+        /**
+         * 当前按类型高亮的状态
+         * @type {string|null}
+         */
+        this.highlightedType = null;
+    }
 
-// 加载路线详情 (CSV)
-async function loadRouteDetails() {
-    return new Promise((resolve, reject) => {
-        if (typeof Papa === 'undefined') {
-            console.warn('PapaParse is not loaded. Route details will not be available.');
-            resolve();
+    /**
+     * 数据缓存对象，用于减少重复的网络请求和计算
+     * @type {Map}
+     */
+    dataCache = new Map();
+
+    /**
+     * 加载路线详情 (CSV)
+     * @returns {Promise<void>}
+     */
+    async loadRouteDetails() {
+        const cacheKey = 'routeDetails';
+        
+        // 检查缓存
+        if (this.dataCache.has(cacheKey)) {
+            const cachedData = this.dataCache.get(cacheKey);
+            this.allRouteDetails = cachedData.allRouteDetails;
+            this.routeDetailsData = cachedData.routeDetailsData;
+            console.log('从缓存加载路线详情');
             return;
         }
 
-        Papa.parse('data/route_details.csv', {
-            download: true,
-            header: true,
-            skipEmptyLines: true,
-            complete: function(results) {
-                console.log('路线详情 CSV 加载成功:', results.data);     
-                allRouteDetails = results.data;
-                results.data.forEach(row => {
-                    const name = row['名称'] || row['name'] || row['Name'];    
-                    if (name) {
-                        routeDetailsData[name] = {
-                            date: row['勘测日期'] || '',
-                            spots: row['无障碍不规范点'] || ''
-                        };
-                    }
-                });
+        return new Promise((resolve) => {
+            if (typeof Papa === 'undefined') {
+                console.warn('PapaParse is not loaded. Route details will not be available.');
                 resolve();
-            },
-            error: function(err) {
-                console.error('路线详情 CSV 加载失败:', err);
-                // 不阻断页面加载
-                resolve();
+                return;
             }
-        });
-    });
-}
 
-// 加载类型配置
-async function loadTypesConfig() {
-    try {
-        const response = await fetch('data/types.json');
-        typesConfig = await response.json();
-        console.log('类型配置加载成功:', typesConfig);
-    } catch (error) {
-        console.error('类型配置加载失败:', error);
-        // 默认配置
-        typesConfig = {
-            "已勘测": { "color": "#4CAF50", "weight": 4, "opacity": 0.8 },    
-            "待勘测": { "color": "#9E9E9E", "weight": 3, "opacity": 0.6 }      
-        };
-    }
-}
-
-// 加载路线数据
-async function loadRoutesData() {
-    try {
-        const response = await fetch('data/routes.geojson');
-        routesData = await response.json();
-        console.log('路线数据加载成功:', routesData);
-        calculateStats();
-        updateStatsDisplay();
-    } catch (error) {
-        console.error('路线数据加载失败:', error);
-        // 创建示例数据
-        routesData = {
-            "type": "FeatureCollection",
-            "features": [
-                {
-                    "type": "Feature",
-                    "properties": { "name": "示例路线1", "type": "已勘测" },
-                    "geometry": {
-                        "type": "LineString",
-                        "coordinates": [[116.3974, 39.9093], [116.4100, 39.9100], [116.4200, 39.9080]]
+            Papa.parse('data/route_details.csv', {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                complete: (results) => {
+                    try {
+                        console.log('路线详情 CSV 加载成功:', results.data);     
+                        this.allRouteDetails = results.data || [];
+                        
+                        // 优化数据处理，减少重复遍历
+                        const routeDetails = {};
+                        this.allRouteDetails.forEach(row => {
+                            try {
+                                const name = row['名称'] || row['name'] || row['Name'];    
+                                if (name) {
+                                    routeDetails[name] = {
+                                        date: row['勘测日期'] || '',
+                                        spots: row['无障碍不规范点'] || ''
+                                    };
+                                }
+                            } catch (rowError) {
+                                console.warn('处理路线详情行时出错:', rowError);
+                            }
+                        });
+                        this.routeDetailsData = routeDetails;
+                        
+                        // 缓存数据
+                        this.dataCache.set(cacheKey, {
+                            allRouteDetails: this.allRouteDetails,
+                            routeDetailsData: this.routeDetailsData
+                        });
+                    } catch (error) {
+                        console.error('处理路线详情数据时出错:', error);
+                    } finally {
+                        resolve();
                     }
                 },
-                {
-                    "type": "Feature",
-                    "properties": { "name": "示例路线2", "type": "待勘测" },
-                    "geometry": {
-                        "type": "LineString",
-                        "coordinates": [[116.3800, 39.9000], [116.3900, 39.8900], [116.4000, 39.8800]]
+                error: (err) => {
+                    console.error('路线详情 CSV 加载失败:', err);
+                    // 不阻断页面加载
+                    resolve();
+                }
+            });
+        });
+    }
+
+    /**
+     * 加载类型配置
+     * @returns {Promise<void>}
+     */
+    async loadTypesConfig() {
+        const cacheKey = 'typesConfig';
+        
+        // 检查缓存
+        if (this.dataCache.has(cacheKey)) {
+            this.typesConfig = this.dataCache.get(cacheKey);
+            console.log('从缓存加载类型配置');
+            return;
+        }
+
+        try {
+            const response = await fetch('data/types.json');
+            this.typesConfig = await response.json();
+            console.log('类型配置加载成功:', this.typesConfig);
+            
+            // 缓存数据
+            this.dataCache.set(cacheKey, this.typesConfig);
+        } catch (error) {
+            console.error('类型配置加载失败:', error);
+            // 默认配置
+            this.typesConfig = {
+                "已勘测": { "color": "#4CAF50", "weight": 4, "opacity": 0.8 },    
+                "待勘测": { "color": "#9E9E9E", "weight": 3, "opacity": 0.6 }      
+            };
+            
+            // 缓存默认配置
+            this.dataCache.set(cacheKey, this.typesConfig);
+        }
+    }
+
+    /**
+     * 加载路线数据
+     * @returns {Promise<void>}
+     */
+    async loadRoutesData() {
+        const cacheKey = 'routesData';
+        
+        // 检查缓存
+        if (this.dataCache.has(cacheKey)) {
+            this.routesData = this.dataCache.get(cacheKey);
+            console.log('从缓存加载路线数据');
+            this.calculateStats();
+            this.updateStatsDisplay();
+            return;
+        }
+
+        try {
+            const response = await fetch('data/routes.geojson');
+            this.routesData = await response.json();
+            console.log('路线数据加载成功:', this.routesData);
+            
+            // 缓存数据
+            this.dataCache.set(cacheKey, this.routesData);
+            
+            this.calculateStats();
+            this.updateStatsDisplay();
+        } catch (error) {
+            console.error('路线数据加载失败:', error);
+            // 创建示例数据
+            this.routesData = {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": { "name": "示例路线1", "type": "已勘测" },
+                        "geometry": {
+                            "type": "LineString",
+                            "coordinates": [[116.3974, 39.9093], [116.4100, 39.9100], [116.4200, 39.9080]]
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "properties": { "name": "示例路线2", "type": "待勘测" },
+                        "geometry": {
+                            "type": "LineString",
+                            "coordinates": [[116.3800, 39.9000], [116.3900, 39.8900], [116.4000, 39.8800]]
+                        }
                     }
-                }
-            ]
-        };
-        calculateStats();
-        updateStatsDisplay();
-    }
-}
-
-// 计算统计数据
-function calculateStats() {
-    if (!routesData || !routesData.features) return;
-
-    let totalLength = 0;
-    const typeStats = {};
-    let totalSpots = 0;
-
-    // 初始化类型统计
-    Object.keys(typesConfig).forEach(type => {       
-        typeStats[type] = 0;
-    });
-
-    // 计算每条路线的长度
-    routesData.features.forEach(feature => {  
-        if (feature.geometry.type === 'LineString') {
-            const line = turf.lineString(feature.geometry.coordinates);
-            const length = turf.length(line, { units: 'kilometers' });
-            totalLength += length;
-
-            // 按类型统计
-            const type = feature.properties.type || '待勘测';
-            if (!typeStats[type]) {
-                typeStats[type] = 0;
-            }
-            typeStats[type] += length;
+                ]
+            };
+            
+            // 缓存示例数据
+            this.dataCache.set(cacheKey, this.routesData);
+            
+            this.calculateStats();
+            this.updateStatsDisplay();
         }
-    });
-
-    // 计算总不规范点数目
-    allRouteDetails.forEach(row => {
-        const spots = row['无障碍不规范点'] || '';
-        if (spots) {
-            // 提取数字部分，例如"10 spots" -> 10
-            const match = spots.match(/\d+/);
-            if (match) {
-                totalSpots += parseInt(match[0]);
-            }
-        }
-    });
-
-    stats.totalLength = totalLength;
-    stats.typeStats = typeStats;
-    stats.totalSpots = totalSpots;
-}
-
-// 按类型高亮路线(外部调用)
-function highlightRoutesByType(type) {
-    if (!window.routesLayer) return;
-
-    // 先清除之前的高亮
-    clearTypeHighlight();
-
-    highlightedType = type;
-
-    window.routesLayer.eachLayer(function(layer) {
-        if (layer._feature) {
-            const layerType = layer._feature.properties.type || '待勘测';      
-            if (layerType === type) {
-                const style = typesConfig[type] || {};
-                layer.setStyle({
-                    ...style,
-                    weight: (style.weight || 4) + 3,
-                    opacity: 1,
-                    dashArray: '10'
-                });
-                if (layer._hitArea) {
-                    layer._hitArea.setStyle({ color: 'transparent', weight: 20, opacity: 0 });
-                }
-            } else {
-                layer.setStyle({
-                    weight: 1,
-                    opacity: 0.25,
-                    dashArray: '6'
-                });
-                if (layer._hitArea) {
-                    layer._hitArea.setStyle({ color: 'transparent', weight: 20, opacity: 0 });
-                }
-            }
-        }
-    });
-
-    // 更新统计面板的选中状态
-    document.querySelectorAll('.type-stat-item').forEach(item => {
-        if (item.dataset.type === type) {
-            item.classList.add('active');
-        } else {
-            item.classList.remove('active');
-        }
-    });
-}
-
-// 清除按类型的高亮
-function clearTypeHighlight() {
-    if (!window.routesLayer) return;
-
-    highlightedType = null;
-
-    window.routesLayer.eachLayer(function(layer) {
-        if (layer._feature) {
-            const originalStyle = getStyleByType(layer._feature);
-            layer.setStyle(originalStyle);
-            if (layer._hitArea) {
-                layer._hitArea.setStyle({ color: 'transparent', weight: 20, opacity: 0 });
-            }
-        }
-    });
-
-    // 清除所有选中状态
-    document.querySelectorAll('.type-stat-item').forEach(item => {
-        item.classList.remove('active');
-    });
-}
-
-// 更新统计显示
-function updateStatsDisplay() {
-    // 更新总长度
-    const totalLengthElement = document.getElementById('total-length');
-    if (totalLengthElement) {
-        totalLengthElement.innerHTML = `总长度: ${stats.totalLength.toFixed(2)} 公里`;
     }
 
-    // 更新总不规范点数目
-    const totalSpotsElement = document.getElementById('total-spots');
-    if (totalSpotsElement) {
-        totalSpotsElement.innerHTML = `总不规范点: ${stats.totalSpots} 处`;
-    }
+    /**
+     * 计算统计数据
+     */
+    calculateStats() {
+        try {
+            if (!this.routesData || !this.routesData.features) return;
 
-    // 更新类型统计
-    const typeStatsElement = document.getElementById('type-stats');
-    if (typeStatsElement) {
-        typeStatsElement.innerHTML = '';
-        Object.entries(stats.typeStats).forEach(([type, length]) => {
-            const typeConfig = typesConfig[type] || {};
-            const color = typeConfig.color || '#9E9E9E';
+            let totalLength = 0;
+            const typeStats = {};
+            let totalSpots = 0;
 
-            const statItem = document.createElement('div');
-            statItem.className = 'type-stat-item';
-            statItem.dataset.type = type;
-            statItem.innerHTML = `
-                <div class="type-color" style="background-color: ${color}"></div>
-                <span>${type}: ${length.toFixed(2)} 公里</span>
-            `;
+            // 初始化类型统计
+            if (this.typesConfig) {
+                try {
+                    Object.keys(this.typesConfig).forEach(type => {
+                        typeStats[type] = 0;
+                    });
+                } catch (error) {
+                    console.warn('初始化类型统计时出错:', error);
+                }
+            }
 
-            // 点击事件：按类型高亮路线
-            statItem.addEventListener('click', function(e) {
-                e.stopPropagation();
+            // 计算每条路线的长度
+            this.routesData.features.forEach(feature => {
+                try {
+                    if (feature.geometry && feature.geometry.type === 'LineString' && feature.geometry.coordinates) {
+                        const line = turf.lineString(feature.geometry.coordinates);
+                        const length = turf.length(line, { units: 'kilometers' });
+                        totalLength += length;
 
-                // 如果已经高亮了该类型，则取消高亮；否则高亮该类型
-                if (highlightedType === type) {
-                    clearTypeHighlight();
-                } else {
-                    highlightRoutesByType(type);
+                        // 按类型统计
+                        const type = feature.properties?.type || '待勘测';
+                        if (!typeStats[type]) {
+                            typeStats[type] = 0;
+                        }
+                        typeStats[type] += length;
+                    }
+                } catch (error) {
+                    console.warn('计算路线长度时出错:', error);
                 }
             });
 
-            typeStatsElement.appendChild(statItem);
+            // 计算总不规范点数目
+            this.allRouteDetails.forEach(row => {
+                try {
+                    const spots = row['无障碍不规范点'] || '';
+                    if (spots) {
+                        // 提取数字部分，例如"10 spots" -> 10
+                        const match = spots.match(/\d+/);
+                        if (match) {
+                            totalSpots += parseInt(match[0], 10);
+                        }
+                    }
+                } catch (error) {
+                    console.warn('计算不规范点时出错:', error);
+                }
+            });
+
+            this.stats.totalLength = totalLength;
+            this.stats.typeStats = typeStats;
+            this.stats.totalSpots = totalSpots;
+        } catch (error) {
+            console.error('计算统计数据时出错:', error);
+        }
+    }
+
+    /**
+     * 按类型高亮路线
+     * @param {string} type - 路线类型
+     */
+    highlightRoutesByType(type) {
+        if (!window.routesLayer) return;
+
+        // 先清除之前的高亮
+        this.clearTypeHighlight();
+
+        this.highlightedType = type;
+
+        window.routesLayer.eachLayer(layer => {
+            if (layer._feature) {
+                const layerType = layer._feature.properties.type || '待勘测';
+                if (layerType === type) {
+                    const style = this.typesConfig[type] || {};
+                    layer.setStyle({
+                        ...style,
+                        weight: (style.weight || 4) + 3,
+                        opacity: 1,
+                        dashArray: '10'
+                    });
+                    if (layer._hitArea) {
+                        layer._hitArea.setStyle({ color: 'transparent', weight: 20, opacity: 0 });
+                    }
+                } else {
+                    layer.setStyle({
+                        weight: 1,
+                        opacity: 0.25,
+                        dashArray: '6'
+                    });
+                    if (layer._hitArea) {
+                        layer._hitArea.setStyle({ color: 'transparent', weight: 20, opacity: 0 });
+                    }
+                }
+            }
         });
+
+        // 更新统计面板的选中状态
+        document.querySelectorAll('.type-stat-item').forEach(item => {
+            if (item.dataset.type === type) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    }
+
+    /**
+     * 清除按类型的高亮
+     */
+    clearTypeHighlight() {
+        if (!window.routesLayer) return;
+
+        this.highlightedType = null;
+
+        window.routesLayer.eachLayer(layer => {
+            if (layer._feature) {
+                const originalStyle = this.getStyleByType(layer._feature);
+                layer.setStyle(originalStyle);
+                if (layer._hitArea) {
+                    layer._hitArea.setStyle({ color: 'transparent', weight: 20, opacity: 0 });
+                }
+            }
+        });
+
+        // 清除所有选中状态
+        document.querySelectorAll('.type-stat-item').forEach(item => {
+            item.classList.remove('active');
+        });
+    }
+
+    /**
+     * 根据类型获取样式
+     * @param {Object} feature - GeoJSON feature
+     * @returns {Object} 样式对象
+     */
+    getStyleByType(feature) {
+        if (!this.typesConfig) return {};
+
+        const type = feature.properties.type || '待勘测';
+        const style = this.typesConfig[type] || this.typesConfig['待勘测'] || {};
+
+        return {
+            ...style,
+            dashArray: '10',
+            lineCap: 'round'
+        };
+    }
+
+    /**
+     * 更新统计显示
+     */
+    updateStatsDisplay() {
+        try {
+            // 更新总长度
+            const totalLengthElement = document.getElementById('total-length');
+            if (totalLengthElement) {
+                try {
+                    totalLengthElement.innerHTML = `总长度: ${this.stats.totalLength.toFixed(2)} 公里`;
+                } catch (error) {
+                    console.warn('更新总长度显示时出错:', error);
+                    totalLengthElement.innerHTML = '总长度: 0.00 公里';
+                }
+            }
+
+            // 更新总不规范点数目
+            const totalSpotsElement = document.getElementById('total-spots');
+            if (totalSpotsElement) {
+                try {
+                    totalSpotsElement.innerHTML = `总不规范点: ${this.stats.totalSpots} 处`;
+                } catch (error) {
+                    console.warn('更新总不规范点显示时出错:', error);
+                    totalSpotsElement.innerHTML = '总不规范点: 0 处';
+                }
+            }
+
+            // 更新类型统计
+            const typeStatsElement = document.getElementById('type-stats');
+            if (typeStatsElement) {
+                try {
+                    typeStatsElement.innerHTML = '';
+                    if (this.stats.typeStats && typeof this.stats.typeStats === 'object') {
+                        Object.entries(this.stats.typeStats).forEach(([type, length]) => {
+                            try {
+                                const typeConfig = this.typesConfig?.[type] || {};
+                                const color = typeConfig.color || '#9E9E9E';
+
+                                const statItem = document.createElement('div');
+                                statItem.className = 'type-stat-item';
+                                statItem.dataset.type = type;
+                                statItem.innerHTML = `
+                                    <div class="type-color" style="background-color: ${color}"></div>
+                                    <span>${type}: ${length.toFixed(2)} 公里</span>
+                                `;
+
+                                // 点击事件：按类型高亮路线
+                                statItem.addEventListener('click', (e) => {
+                                    try {
+                                        e.stopPropagation();
+
+                                        // 如果已经高亮了该类型，则取消高亮；否则高亮该类型
+                                        if (this.highlightedType === type) {
+                                            this.clearTypeHighlight();
+                                        } else {
+                                            this.highlightRoutesByType(type);
+                                        }
+                                    } catch (eventError) {
+                                        console.warn('处理类型统计点击事件时出错:', eventError);
+                                    }
+                                });
+
+                                typeStatsElement.appendChild(statItem);
+                            } catch (itemError) {
+                                console.warn('创建类型统计项时出错:', itemError);
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.warn('更新类型统计显示时出错:', error);
+                }
+            }
+        } catch (error) {
+            console.error('更新统计显示时出错:', error);
+        }
+    }
+
+    /**
+     * 初始化数据加载
+     * @returns {Promise<void>}
+     */
+    async init() {
+        await this.loadTypesConfig();
+        await this.loadRouteDetails();
+        await this.loadRoutesData();
     }
 }
 
-// 初始化数据加载
-async function initData() {
-    await loadTypesConfig();
-    await loadRouteDetails();
-    await loadRoutesData();
-}
+// 导出单例实例
+const dataManager = new DataManager();
 
 // 页面加载完成后初始化
-window.addEventListener('DOMContentLoaded', initData);
+window.addEventListener('DOMContentLoaded', () => {
+    dataManager.init();
+});
+
+// 导出数据管理器
+window.dataManager = dataManager;

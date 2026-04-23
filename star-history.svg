@@ -21,16 +21,16 @@
  <line x1="90" y1="350" x2="100" y2="350" stroke="#333333" stroke-width="2"/> <line x1="90" y1="250" x2="100" y2="250" stroke="#333333" stroke-width="2"/> <line x1="90" y1="150" x2="100" y2="150" stroke="#333333" stroke-width="2"/> <line x1="90" y1="50" x2="100" y2="50" stroke="#333333" stroke-width="2"/>
   
   <!-- 刻度标签 -->
-  <text x="100" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">04/10</text> <text x="400" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">04/17</text> <text x="700" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">04/22</text>
+  <text x="100" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">04/10</text> <text x="400" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">04/18</text> <text x="700" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">04/23</text>
   
   <!-- Y轴标签 -->
    <text x="70" y="355" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">0</text> <text x="70" y="255" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">1</text> <text x="70" y="155" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">2</text> <text x="70" y="55" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">3</text>
   
   <!-- 数据曲线 -->
-  <path d="M100,350 L160,250 L220,250 L280,150 L340,150 L400,150 L460,150 L520,150 L580,150 L640,150 L700,150" stroke="#4CAF50" stroke-width="3" fill="none"/>
+  <path d="M100,350 L154,250 L208,250 L262,150 L316,150 L370,150 L424,150 L478,150 L532,150 L586,150 L640,150 L694,150" stroke="#4CAF50" stroke-width="3" fill="none"/>
   
   <!-- 数据点 -->
-   <circle cx="100" cy="350" r="5" fill="#4CAF50"/> <circle cx="160" cy="250" r="5" fill="#4CAF50"/> <circle cx="220" cy="250" r="5" fill="#4CAF50"/> <circle cx="280" cy="150" r="5" fill="#4CAF50"/> <circle cx="340" cy="150" r="5" fill="#4CAF50"/> <circle cx="400" cy="150" r="5" fill="#4CAF50"/> <circle cx="460" cy="150" r="5" fill="#4CAF50"/> <circle cx="520" cy="150" r="5" fill="#4CAF50"/> <circle cx="580" cy="150" r="5" fill="#4CAF50"/> <circle cx="640" cy="150" r="5" fill="#4CAF50"/> <circle cx="700" cy="150" r="5" fill="#4CAF50"/>
+   <circle cx="100" cy="350" r="5" fill="#4CAF50"/> <circle cx="154" cy="250" r="5" fill="#4CAF50"/> <circle cx="208" cy="250" r="5" fill="#4CAF50"/> <circle cx="262" cy="150" r="5" fill="#4CAF50"/> <circle cx="316" cy="150" r="5" fill="#4CAF50"/> <circle cx="370" cy="150" r="5" fill="#4CAF50"/> <circle cx="424" cy="150" r="5" fill="#4CAF50"/> <circle cx="478" cy="150" r="5" fill="#4CAF50"/> <circle cx="532" cy="150" r="5" fill="#4CAF50"/> <circle cx="586" cy="150" r="5" fill="#4CAF50"/> <circle cx="640" cy="150" r="5" fill="#4CAF50"/> <circle cx="694" cy="150" r="5" fill="#4CAF50"/>
   
   <!-- 图例 -->
   <rect x="600" y="80" width="15" height="10" fill="#4CAF50"/>
