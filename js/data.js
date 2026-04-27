@@ -389,14 +389,17 @@ class DataManager {
                 }
             }
 
-            // 更新总不规范点数目
+            // 更新不规范点统计（三行显示）
             const totalSpotsElement = document.getElementById('total-spots');
             if (totalSpotsElement) {
                 try {
-                    totalSpotsElement.innerHTML = `总不规范点: ${this.stats.totalSpots} 处`;
+                    const onCampusSpots = 88; // 校内固定值
+                    const offCampusSpots = this.stats.totalSpots; // 校外实时值
+                    const totalSpots = onCampusSpots + offCampusSpots; // 总计值
+                    totalSpotsElement.innerHTML = `校内：${onCampusSpots}处<br>校外：${offCampusSpots}处<br>总计：${totalSpots}处`;
                 } catch (error) {
-                    console.warn('更新总不规范点显示时出错:', error);
-                    totalSpotsElement.innerHTML = '总不规范点: 0 处';
+                    console.warn('更新不规范点显示时出错:', error);
+                    totalSpotsElement.innerHTML = '校内：88处<br>校外：0处<br>总计：88处';
                 }
             }
 
