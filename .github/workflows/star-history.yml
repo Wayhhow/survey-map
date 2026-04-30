@@ -1,0 +1,244 @@
+name: Star History
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # 每 6 小时更新一次
+  workflow_dispatch:          # 允许手动点击触发
+
+permissions:
+  contents: write
+
+jobs:
+  star-history:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    steps:
+      # 1. 拉取你的仓库代码
+      - uses: actions/checkout@v4
+
+      # 2. 直接生成 star history 图片 (使用简单的 curl 命令获取当前星标数并生成 SVG)
+      - name: Generate star history chart
+        run: |
+          # 安装 jq
+          sudo apt-get update && sudo apt-get install -y jq
+          
+          # 获取当前星标数（添加错误处理）
+          STARS=$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/Wayhhow/survey-map | jq -r '.stargazers_count // 0')
+          
+          # 获取当前日期
+          CURRENT_DATE=$(date +"%Y-%m-%d")
+          
+          # 历史数据文件路径
+          HISTORY_FILE=".star-history.json"
+          
+          # 初始化历史数据文件（如果不存在）
+          if [ ! -f "$HISTORY_FILE" ]; then
+            echo '{"history": []}' > "$HISTORY_FILE"
+          fi
+          
+          # 读取历史数据
+          HISTORY=$(cat "$HISTORY_FILE")
+          
+          # 检查今天是否已经记录了数据
+          TODAY_RECORDED=$(echo "$HISTORY" | jq -r ".history[] | select(.date == \"$CURRENT_DATE\") | .stars")
+          
+          # 如果今天还没有记录数据，添加新记录
+          if [ -z "$TODAY_RECORDED" ]; then
+            # 添加新记录
+            NEW_HISTORY=$(echo "$HISTORY" | jq ".history += [{\"date\": \"$CURRENT_DATE\", \"stars\": $STARS}]")
+            echo "$NEW_HISTORY" > "$HISTORY_FILE"
+            # 只保留最近30天的数据
+            TRIMMED_HISTORY=$(echo "$NEW_HISTORY" | jq ".history = (.history | sort_by(.date) | reverse | .[:30] | reverse)")
+            echo "$TRIMMED_HISTORY" > "$HISTORY_FILE"
+          else
+            # 更新今天的记录
+            UPDATED_HISTORY=$(echo "$HISTORY" | jq ".history = (.history | map(if .date == \"$CURRENT_DATE\" then .stars = $STARS else . end))")
+            echo "$UPDATED_HISTORY" > "$HISTORY_FILE"
+          fi
+          
+          # 读取更新后的历史数据
+          UPDATED_HISTORY=$(cat "$HISTORY_FILE")
+          
+          # 提取星标数据数组
+          STARS_ARRAY=$(echo "$UPDATED_HISTORY" | jq -r '.history[].stars')
+          
+          # 计算最大星标数
+          MAX_STARS=$(echo "$UPDATED_HISTORY" | jq -r '.history[].stars' | sort -n | tail -1)
+          if [ -z "$MAX_STARS" ]; then
+            MAX_STARS=$STARS
+          fi
+          if [ $MAX_STARS -lt 1 ]; then
+            MAX_STARS=1
+          fi
+          
+          # 计算数据点数量
+          DATA_POINTS=$(echo "$STARS_ARRAY" | wc -l)
+          if [ $DATA_POINTS -lt 1 ]; then
+            DATA_POINTS=1
+          fi
+          
+          # 计算Y轴最大刻度值（确保是整数且大于等于MAX_STARS）
+          Y_MAX=$((MAX_STARS + 1))
+          if [ $Y_MAX -lt 3 ]; then
+            Y_MAX=3
+          fi
+          
+          # 生成Y轴刻度标签
+          Y_TICKS=""
+          Y_LABELS=""
+          # 生成Y轴刻度（只显示整数）
+          for ((i=0; i<=$Y_MAX; i++)); do
+            # 计算Y坐标
+            Y_POS=$((350 - (i * 300 / Y_MAX)))
+            # 添加刻度线
+            Y_TICKS="$Y_TICKS <line x1=\"90\" y1=\"$Y_POS\" x2=\"100\" y2=\"$Y_POS\" stroke=\"#333333\" stroke-width=\"2\"/>"
+            # 添加标签
+            Y_LABELS="$Y_LABELS <text x=\"70\" y=\"$((Y_POS + 5))\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"end\" fill=\"#666666\">$i</text>"
+          done
+          
+          # 生成数据点坐标
+          POINTS=""
+          if [ $DATA_POINTS -gt 0 ]; then
+            # 计算每个数据点的X坐标
+            X_START=100
+            X_END=700
+            if [ $DATA_POINTS -eq 1 ]; then
+              X_STEP=0
+            else
+              X_STEP=$(( (X_END - X_START) / ($DATA_POINTS - 1) ))
+            fi
+            
+            # 生成路径
+            i=0
+            for STAR in $STARS_ARRAY; do
+              X=$((X_START + i * X_STEP))
+              # 计算Y坐标（根据星标数和Y轴最大值，确保对齐整数刻度）
+              Y=$((350 - (STAR * 300 / Y_MAX)))
+              if [ $i -eq 0 ]; then
+                POINTS="M$X,$Y"
+              else
+                POINTS="$POINTS L$X,$Y"
+              fi
+              i=$((i + 1))
+            done
+          else
+            POINTS="M100,350 L700,350"
+          fi
+          
+          # 生成数据点
+          DATA_CIRCLES=""
+          if [ $DATA_POINTS -gt 0 ]; then
+            i=0
+            for STAR in $STARS_ARRAY; do
+              X=$((X_START + i * X_STEP))
+              # 计算Y坐标（根据星标数和Y轴最大值，确保对齐整数刻度）
+              Y=$((350 - (STAR * 300 / Y_MAX)))
+              DATA_CIRCLES="$DATA_CIRCLES <circle cx=\"$X\" cy=\"$Y\" r=\"5\" fill=\"#4CAF50\"/>"
+              i=$((i + 1))
+            done
+          fi
+          
+          # 提取历史数据中的日期
+          DATES_ARRAY=$(echo "$UPDATED_HISTORY" | jq -r '.history[].date')
+          
+          # 生成X轴标签
+          X_LABELS=""
+          if [ $DATA_POINTS -gt 0 ]; then
+            # 只显示关键日期（开始、中间、结束）
+            if [ $DATA_POINTS -ge 3 ]; then
+              # 获取第一个、中间和最后一个日期
+              FIRST_DATE=$(echo "$DATES_ARRAY" | head -1)
+              MIDDLE_DATE=$(echo "$DATES_ARRAY" | sed -n "$((DATA_POINTS / 2 + 1))p")
+              LAST_DATE=$(echo "$DATES_ARRAY" | tail -1)
+              
+              # 格式化日期（只显示月-日）
+              FIRST_DATE_FORMATTED=$(echo "$FIRST_DATE" | cut -d '-' -f 2,3 | tr '-' '/')
+              MIDDLE_DATE_FORMATTED=$(echo "$MIDDLE_DATE" | cut -d '-' -f 2,3 | tr '-' '/')
+              LAST_DATE_FORMATTED=$(echo "$LAST_DATE" | cut -d '-' -f 2,3 | tr '-' '/')
+              
+              # 添加X轴标签
+              X_LABELS="<text x=\"100\" y=\"380\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"middle\" fill=\"#666666\">$FIRST_DATE_FORMATTED</text>"
+              X_LABELS="$X_LABELS <text x=\"400\" y=\"380\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"middle\" fill=\"#666666\">$MIDDLE_DATE_FORMATTED</text>"
+              X_LABELS="$X_LABELS <text x=\"700\" y=\"380\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"middle\" fill=\"#666666\">$LAST_DATE_FORMATTED</text>"
+            else
+              # 数据点不足3个时，只显示开始和结束日期
+              FIRST_DATE=$(echo "$DATES_ARRAY" | head -1)
+              LAST_DATE=$(echo "$DATES_ARRAY" | tail -1)
+              
+              # 格式化日期
+              FIRST_DATE_FORMATTED=$(echo "$FIRST_DATE" | cut -d '-' -f 2,3 | tr '-' '/')
+              LAST_DATE_FORMATTED=$(echo "$LAST_DATE" | cut -d '-' -f 2,3 | tr '-' '/')
+              
+              # 添加X轴标签
+              X_LABELS="<text x=\"100\" y=\"380\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"middle\" fill=\"#666666\">$FIRST_DATE_FORMATTED</text>"
+              X_LABELS="$X_LABELS <text x=\"700\" y=\"380\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"middle\" fill=\"#666666\">$LAST_DATE_FORMATTED</text>"
+            fi
+          else
+            # 没有数据时显示默认标签
+            X_LABELS="<text x=\"100\" y=\"380\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"middle\" fill=\"#666666\">开始</text>"
+            X_LABELS="$X_LABELS <text x=\"400\" y=\"380\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"middle\" fill=\"#666666\">现在</text>"
+            X_LABELS="$X_LABELS <text x=\"700\" y=\"380\" font-family=\"Arial\" font-size=\"12\" text-anchor=\"middle\" fill=\"#666666\">未来</text>"
+          fi
+          
+          # 生成SVG图表
+          cat > star-history.svg << 'EOF'
+          <svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
+            <!-- 背景 -->
+            <rect width="800" height="400" fill="#ffffff" stroke="#e0e0e0" stroke-width="1"/>
+            
+            <!-- 标题 -->
+            <text x="400" y="40" font-family="Arial" font-size="24" font-weight="bold" text-anchor="middle" fill="#333333">Star History</text>
+            
+            <!-- 副标题 -->
+            <text x="400" y="70" font-family="Arial" font-size="16" text-anchor="middle" fill="#666666">Wayhhow/survey-map</text>
+            
+            <!-- 坐标轴 -->
+            <line x1="100" y1="350" x2="700" y2="350" stroke="#cccccc" stroke-width="2"/>
+            <line x1="100" y1="50" x2="100" y2="350" stroke="#cccccc" stroke-width="2"/>
+            
+            <!-- X轴刻度 -->
+            <line x1="100" y1="350" x2="100" y2="360" stroke="#333333" stroke-width="2"/>
+            <line x1="400" y1="350" x2="400" y2="360" stroke="#333333" stroke-width="2"/>
+            <line x1="700" y1="350" x2="700" y2="360" stroke="#333333" stroke-width="2"/>
+            
+            <!-- Y轴刻度 -->
+          EOF
+          
+          # 添加Y轴刻度
+          echo "$Y_TICKS" >> star-history.svg
+          
+          # 继续生成SVG
+          cat >> star-history.svg << EOF
+            
+            <!-- 刻度标签 -->
+            $X_LABELS
+            
+            <!-- Y轴标签 -->
+            $Y_LABELS
+            
+            <!-- 数据曲线 -->
+            <path d="$POINTS" stroke="#4CAF50" stroke-width="3" fill="none"/>
+            
+            <!-- 数据点 -->
+            $DATA_CIRCLES
+            
+            <!-- 图例 -->
+            <rect x="600" y="80" width="15" height="10" fill="#4CAF50"/>
+            <text x="620" y="90" font-family="Arial" font-size="12" fill="#333333">Wayhhow/survey-map</text>
+            
+            <!-- 说明文字 -->
+            <text x="400" y="320" font-family="Arial" font-size="14" text-anchor="middle" fill="#666666">当前星标数: $STARS</text>
+            <text x="400" y="340" font-family="Arial" font-size="12" text-anchor="middle" fill="#999999">图表将通过 GitHub Actions 每 6 小时自动更新</text>
+          </svg>
+          EOF
+
+      # 3. 如果图片或历史数据有变化，自动提交到仓库
+      - name: Commit and Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add star-history.svg .star-history.json
+          git diff --cached --quiet || git commit -m "chore: update star history chart"
+          git push

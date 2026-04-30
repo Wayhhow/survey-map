@@ -1,0 +1,42 @@
+<svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="800" height="400" fill="#ffffff" stroke="#e0e0e0" stroke-width="1"/>
+  
+  <!-- 标题 -->
+  <text x="400" y="40" font-family="Arial" font-size="24" font-weight="bold" text-anchor="middle" fill="#333333">Star History</text>
+  
+  <!-- 副标题 -->
+  <text x="400" y="70" font-family="Arial" font-size="16" text-anchor="middle" fill="#666666">Wayhhow/survey-map</text>
+  
+  <!-- 坐标轴 -->
+  <line x1="100" y1="350" x2="700" y2="350" stroke="#cccccc" stroke-width="2"/>
+  <line x1="100" y1="50" x2="100" y2="350" stroke="#cccccc" stroke-width="2"/>
+  
+  <!-- X轴刻度 -->
+  <line x1="100" y1="350" x2="100" y2="360" stroke="#333333" stroke-width="2"/>
+  <line x1="400" y1="350" x2="400" y2="360" stroke="#333333" stroke-width="2"/>
+  <line x1="700" y1="350" x2="700" y2="360" stroke="#333333" stroke-width="2"/>
+  
+  <!-- Y轴刻度 -->
+ <line x1="90" y1="350" x2="100" y2="350" stroke="#333333" stroke-width="2"/> <line x1="90" y1="250" x2="100" y2="250" stroke="#333333" stroke-width="2"/> <line x1="90" y1="150" x2="100" y2="150" stroke="#333333" stroke-width="2"/> <line x1="90" y1="50" x2="100" y2="50" stroke="#333333" stroke-width="2"/>
+  
+  <!-- 刻度标签 -->
+  <text x="100" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">04/10</text> <text x="400" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">04/19</text> <text x="700" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="#666666">04/26</text>
+  
+  <!-- Y轴标签 -->
+   <text x="70" y="355" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">0</text> <text x="70" y="255" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">1</text> <text x="70" y="155" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">2</text> <text x="70" y="55" font-family="Arial" font-size="12" text-anchor="end" fill="#666666">3</text>
+  
+  <!-- 数据曲线 -->
+  <path d="M100,350 L142,250 L184,250 L226,150 L268,150 L310,150 L352,150 L394,150 L436,150 L478,150 L520,150 L562,150 L604,150 L646,150 L688,150" stroke="#4CAF50" stroke-width="3" fill="none"/>
+  
+  <!-- 数据点 -->
+   <circle cx="100" cy="350" r="5" fill="#4CAF50"/> <circle cx="142" cy="250" r="5" fill="#4CAF50"/> <circle cx="184" cy="250" r="5" fill="#4CAF50"/> <circle cx="226" cy="150" r="5" fill="#4CAF50"/> <circle cx="268" cy="150" r="5" fill="#4CAF50"/> <circle cx="310" cy="150" r="5" fill="#4CAF50"/> <circle cx="352" cy="150" r="5" fill="#4CAF50"/> <circle cx="394" cy="150" r="5" fill="#4CAF50"/> <circle cx="436" cy="150" r="5" fill="#4CAF50"/> <circle cx="478" cy="150" r="5" fill="#4CAF50"/> <circle cx="520" cy="150" r="5" fill="#4CAF50"/> <circle cx="562" cy="150" r="5" fill="#4CAF50"/> <circle cx="604" cy="150" r="5" fill="#4CAF50"/> <circle cx="646" cy="150" r="5" fill="#4CAF50"/> <circle cx="688" cy="150" r="5" fill="#4CAF50"/>
+  
+  <!-- 图例 -->
+  <rect x="600" y="80" width="15" height="10" fill="#4CAF50"/>
+  <text x="620" y="90" font-family="Arial" font-size="12" fill="#333333">Wayhhow/survey-map</text>
+  
+  <!-- 说明文字 -->
+  <text x="400" y="320" font-family="Arial" font-size="14" text-anchor="middle" fill="#666666">当前星标数: 2</text>
+  <text x="400" y="340" font-family="Arial" font-size="12" text-anchor="middle" fill="#999999">图表将通过 GitHub Actions 每 6 小时自动更新</text>
+</svg>
