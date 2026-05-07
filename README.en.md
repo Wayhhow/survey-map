@@ -147,6 +147,131 @@ Edit `data/types.json`:
 }
 ```
 
+## 📝 Beginner Guide: How to Update Route Data
+
+> This guide is for beginners with no prior coding experience. Follow the step-by-step instructions to update route data on the map.
+
+### What You Need
+
+- A computer (Windows or Mac)
+- A web browser (Chrome recommended)
+- GitHub account with access to the [project repository](https://github.com/Wayhhow/survey-map)
+
+---
+
+### Step 1: Export KML File from Google My Maps
+
+1. Open your browser and go to [Google My Maps](https://www.google.com/maps/d/), sign in with your Google account
+2. Find and open the Chengguang Team map project (usually named "Accessibility Supervision Routes" or similar)
+3. Verify that your new routes are on the map (add them first if needed)
+4. Next to the map name, click the **folder icon** or **three-dot menu button**
+5. Select **"Export to KML"**
+6. **Do NOT check** "Export as KML instead of KMZ" (keep default)
+7. Click **Download**, you'll get a `.kml` file (e.g., `Accessibility_Routes.kml`)
+8. Save the file to an accessible location (like your Desktop)
+
+> 💡 **Tip**: If you get a `.kmz` file instead, you selected the wrong export option. Please repeat the steps and make sure to select KML format.
+
+---
+
+### Step 2: Convert KML File to Project Format
+
+1. Copy the downloaded `.kml` file to the project root folder (the `survey-map` folder, same directory as `convert-kml.js`)
+2. Open your computer's **Terminal**:
+   - **Windows**: Press `Win + R`, type `cmd`, press Enter
+   - **Mac**: Press `Cmd + Space`, type `Terminal`, press Enter
+3. Use `cd` command to enter the project folder:
+   ```bash
+   cd Desktop/Accessibility_Map_Visualization/survey-map
+   ```
+   > 💡 If your path has spaces or Chinese characters, wrap it in quotes: `cd "C:\Users\YourName\Desktop\survey-map"`
+4. **First time only**: Install dependencies (you won't need to do this again):
+   ```bash
+   npm install
+   ```
+   > 💡 If you see `npm is not recognized`, you need to install [Node.js](https://nodejs.org/). Download the LTS version and restart your terminal.
+5. Run the conversion command (replace `your_file_name.kml` with your actual file name):
+   ```bash
+   node convert-kml.js your_file_name.kml data/routes.geojson
+   ```
+6. You'll see success messages like:
+   ```
+   Conversion successful! Output file: data/routes.geojson
+   Successfully updated route details CSV! Added 3 new route records. Output file: data/route_details.csv
+   ```
+   > 💡 If you see "No new routes found", the KML file doesn't contain new routes.
+
+---
+
+### Step 3: Manually Fill in Survey Information
+
+After conversion, the `data/route_details.csv` file is automatically updated with new routes added at the bottom. However, the "Survey Date" and "Accessibility Irregularities" columns are empty and need to be filled manually.
+
+1. Open `data/route_details.csv` with **Excel** or **Notepad**
+2. You'll see a table like this:
+
+   | Name | Survey Date | Accessibility Irregularities |
+   |------|-------------|------------------------------|
+   | Gate1-Gate3 | 2025-12-7 | 10 spots |
+   | ... | ... | ... |
+   | **NewRouteA** | **(empty)** | **(empty)** |
+   | **NewRouteB** | **(empty)** | **(empty)** |
+
+3. Fill in the following for new routes:
+   - **Survey Date**: Format as `YYYY-MM-DD`, e.g., `2026-5-7`
+   - **Accessibility Irregularities**: Format as `number + spots`, e.g., `5 spots` (means 5 irregular spots found)
+4. Leave both fields empty if the route hasn't been surveyed yet
+5. **Save the file** (if using Excel, choose "Save as CSV" format)
+
+> ⚠️ **Important**: Do NOT modify existing route names or reorder rows. Only fill in the empty date and irregularities columns.
+
+---
+
+### Step 4: Upload Updates to GitHub
+
+1. Open Terminal and make sure you're still in the `survey-map` directory
+2. Run these three commands one by one:
+
+   ```bash
+   git add data/routes.geojson data/route_details.csv
+   ```
+
+   This tells Git: "I want to include changes to these two files."
+
+   ```bash
+   git commit -m "Update route data: add new surveyed routes"
+   ```
+
+   This commits the changes. The message in quotes describes what you updated.
+
+   ```bash
+   git push origin main
+   ```
+
+   This pushes the changes to GitHub.
+
+3. Wait 1–2 minutes, then visit the [live map](https://wayhhow.github.io/survey-map/) to see the updated data!
+
+> 💡 **If `git push` fails**: Someone may have updated the code before you. Run `git pull origin main` first to get the latest changes, then try `git push origin main` again.
+
+---
+
+### Complete Workflow Summary
+
+```
+Draw routes in Google My Maps → Export KML file → Run conversion script → CSV auto-adds empty rows → Manually fill dates/irregularities → Git push to GitHub → Map updates automatically
+```
+
+### Common Issues
+
+| Issue | Solution |
+|-------|----------|
+| `npm install` fails | Make sure [Node.js](https://nodejs.org/) is installed, restart terminal |
+| `node convert-kml.js` fails | Ensure the KML file is in the `survey-map` folder, no Chinese/spaces in filename |
+| `git push` rejected | Run `git pull origin main` first, then `git push origin main` |
+| New routes not showing on map | Wait 1–2 minutes for GitHub Pages deployment, refresh with Ctrl+F5 |
+| CSV file shows garbled text in Excel | Open with Notepad to verify content; Excel encoding issues don't affect the website |
+
 ## 👨‍💻 Local Development
 
 Start a local static server for preview:
