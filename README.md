@@ -147,7 +147,7 @@ node convert-kml.js input.kml data/routes.geojson
 }
 ```
 
-## 📝 新手操作指南：如何更新线路数据
+## 📝 纯新手操作指南（针对0基础队员）：如何更新线路数据
 
 > 本指南面向零基础人员，手把手教你如何把新的勘测线路数据更新到地图上。只要按步骤操作即可，不需要懂编程。
 
@@ -162,7 +162,7 @@ node convert-kml.js input.kml data/routes.geojson
 ### 第一步：从 Google My Maps 导出 KML 文件
 
 1. 打开浏览器，访问 [Google My Maps](https://www.google.com/maps/d/)，登录你的 Google 账号
-2. 找到并打开橙光队的地图项目（一般叫"无障碍督导路线"之类的名字）
+2. 找到并打开橙光队的地图项目
 3. 确认地图上有你新添加的线路（如果没有，先在地图上画好线路再继续）
 4. 在地图名称旁边，点击 **"文件夹"图标** 或 **三个点的菜单按钮**
 5. 选择 **"导出为 KML"**（Export to KML）
@@ -207,7 +207,7 @@ node convert-kml.js input.kml data/routes.geojson
 
 转换完成后，`data/route_details.csv` 文件会自动更新——新线路会被添加到表格最下面。但它们的"勘测日期"和"无障碍不规范点"两列是空的，需要你手动填写。
 
-1. 用 **Excel** 或 **记事本** 打开 `data/route_details.csv`
+1. 不要用 **Excel** （可能会乱码），用 **记事本或者代码编译器** 打开 `data/route_details.csv`
 2. 你会看到类似这样的表格：
 
    | 名称 | 勘测日期 | 无障碍不规范点 |
@@ -221,7 +221,7 @@ node convert-kml.js input.kml data/routes.geojson
    - **勘测日期**：格式为 `年-月-日`，例如 `2026-5-7`
    - **无障碍不规范点**：格式为 `数字 + spots`，例如 `5 spots`（表示发现了 5 个不规范点）
 4. 如果这条线路还没去勘测，两列可以暂时留空
-5. **保存文件**（如果用 Excel 打开的，保存时选择"保持 CSV 格式"，不要另存为 xlsx）
+5. **保存文件**
 
 > ⚠️ **重要**：不要修改已有线路的名称，不要调换行的顺序，只填写空的日期和不规范点即可。
 
