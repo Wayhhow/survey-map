@@ -304,6 +304,10 @@ npx http-server
 **Wayhhow**
 - GitHub: [@Wayhhow](https://github.com/Wayhhow)
 
+## 🌟 Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Wayhhow/survey-map&type=Date)](https://star-history.com/#Wayhhow/survey-map&Date)
+
 ## 📄 许可证
 
 本项目采用 [MIT 许可证](LICENSE)。
