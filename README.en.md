@@ -21,6 +21,26 @@
 
 ---
 
+## 📋 Table of Contents
+
+1.  [Project Introduction](#project-introduction)
+2.  [Core Features](#core-features)
+3.  [Quick Access](#quick-access)
+4.  [Project Structure](#project-structure)
+5.  [Technology Stack](#technology-stack)
+6.  [Deployment Guide](#deployment-guide)
+7.  [Usage Guide](#usage-guide)
+    *   [Quick Start](#quick-start)
+    *   [KML Conversion Example](#kml-conversion-example)
+    *   [Configure Route Type Colors](#configure-route-type-colors)
+8.  [Beginner Guide](#beginner-guide)
+9.  [Local Development](#local-development)
+10. [Notes](#notes)
+11. [About Us](#about-us)
+12. [Author](#author)
+13. [Star History](#star-history)
+14. [License](#license)
+
 ## 📋 Project Introduction
 
 This project is a route visualization platform for the accessibility supervision activities of the **"Chengguang" Volunteer Service Team** at Zhicheng College, Southern University of Science and Technology. It displays supervision routes on an interactive map, supporting surveyed/to-be-surveyed route distinction, real-time length statistics, and survey detail display, providing an intuitive data management and presentation tool for accessibility facility supervision.
