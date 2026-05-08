@@ -304,6 +304,10 @@ We are dedicated to accessibility public welfare, promoting urban accessibility 
 **Wayhhow**
 - GitHub: [@Wayhhow](https://github.com/Wayhhow)
 
+## 🌟 Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Wayhhow/survey-map&type=Date)](https://star-history.com/#Wayhhow/survey-map&Date)
+
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
