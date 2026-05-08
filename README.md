@@ -23,30 +23,32 @@
 
 ## 📋 目录
 
-1.  [项目简介](#项目简介)
-2.  [核心功能](#核心功能)
-3.  [快速访问](#快速访问)
-4.  [项目结构](#项目结构)
-5.  [技术栈](#技术栈)
-6.  [部署指南](#部署指南)
-7.  [使用方法](#使用方法)
-    *   [快速开始](#快速开始)
-    *   [KML 转换示例](#kml转换示例)
-    *   [配置线路类型颜色](#配置线路类型颜色)
-8.  [新手操作指南](#新手操作指南)
-9.  [本地开发](#本地开发)
-10. [注意事项](#注意事项)
-11. [关于我们](#关于我们)
-12. [作者](#作者)
-13. [Star History](#star-history)
-14. [许可证](#许可证)
+1.  [项目简介](#intro)
+2.  [核心功能](#features)
+3.  [快速访问](#access)
+4.  [项目结构](#structure)
+5.  [技术栈](#tech)
+6.  [部署指南](#deploy)
+7.  [使用方法](#usage)
+    *   [快速开始](#quickstart)
+    *   [KML 转换示例](#kml)
+    *   [配置线路类型颜色](#config)
+8.  [新手操作指南](#guide)
+9.  [本地开发](#dev)
+10. [注意事项](#notes)
+11. [关于我们](#about)
+12. [作者](#author)
+13. [Star History](#stars)
+14. [许可证](#license)
 
+<a id="intro"></a>
 ## 📋 项目简介
 
 本项目是**南方科技大学致诚书院"橙光"志愿服务队**无障碍督导活动的路线可视化平台。通过交互式地图展示督导路线，支持已勘测与待勘测线路的区分、长度实时统计、勘测详情展示等功能，为无障碍设施督导工作提供直观的数据管理与展示工具。
 
 项目基于 Leaflet.js 与高德地图瓦片构建，采用 GitHub Pages 托管，并配置 GitHub Actions 实现自动化部署。
 
+<a id="features"></a>
 ## 🎯 核心功能
 
 - **线路可视化**：基于 Leaflet.js 渲染所有督导路线，支持缩放与平移
@@ -56,10 +58,12 @@
 - **响应式设计**：适配桌面端与移动端，提供一致的用户体验
 - **自动化部署**：推送代码至 `main` 分支后，GitHub Actions 自动构建并部署
 
+<a id="access"></a>
 ## 🌐 快速访问
 
 **在线地图**：[https://wayhhow.github.io/survey-map/](https://wayhhow.github.io/survey-map/)
 
+<a id="structure"></a>
 ## 📁 项目结构
 
 ```
@@ -88,6 +92,7 @@ survey-map/
     └── star-history.yml    # 星标历史更新工作流
 ```
 
+<a id="tech"></a>
 ## 🛠 技术栈
 
 | 类别 | 技术/库 | 用途 |
@@ -100,6 +105,7 @@ survey-map/
 | 部署 | GitHub Pages | 静态网站托管 |
 | CI/CD | GitHub Actions | 自动部署与定时任务 |
 
+<a id="deploy"></a>
 ## 🚀 部署指南
 
 ### 1. 创建 GitHub 仓库并启用 Pages
@@ -122,8 +128,10 @@ git push origin main
 
 GitHub Pages 通常在 1–2 分钟内完成构建与部署，随后可通过 `https://your-username.github.io/survey-map` 访问。
 
+<a id="usage"></a>
 ## 📊 使用方法
 
+<a id="quickstart"></a>
 ### 快速开始
 
 1. **准备线路数据**：在 [Google My Maps](https://www.google.com/maps/d/) 中绘制线路，按类型分层
@@ -131,6 +139,7 @@ GitHub Pages 通常在 1–2 分钟内完成构建与部署，随后可通过 `h
 3. **更新项目**：替换 `data/routes.geojson`，转换工具会自动同步 `data/route_details.csv`
 4. **提交部署**：推送至 GitHub，`main` 分支变更将触发自动部署
 
+<a id="kml"></a>
 ### KML 转换示例
 
 ```bash
@@ -146,6 +155,7 @@ node convert-kml.js input.kml data/routes.geojson
 
 转换过程会保留 `route_details.csv` 中已有的手动填写数据（勘测日期、不规范点），并自动为新路线添加空记录行。
 
+<a id="config"></a>
 ### 配置线路类型颜色
 
 编辑 `data/types.json`：
@@ -167,7 +177,8 @@ node convert-kml.js input.kml data/routes.geojson
 }
 ```
 
-## 📝 纯新手操作指南（针对0基础队员）：如何更新线路数据
+<a id="guide"></a>
+## 📝 新手操作指南：如何更新线路数据
 
 > 本指南面向零基础人员，手把手教你如何把新的勘测线路数据更新到地图上。只要按步骤操作即可，不需要懂编程。
 
@@ -292,6 +303,7 @@ Google My Maps 画线路 → 导出 KML 文件 → 运行转换脚本 → CSV �
 | 地图上没显示新线路 | 等 1–2 分钟让 GitHub Pages 重新部署，然后刷新页面（Ctrl+F5 强制刷新） |
 | CSV 文件用 Excel 打开乱码 | 用记事本打开确认内容正确，Excel 乱码不影响网站显示 |
 
+<a id="dev"></a>
 ## 👨‍💻 本地开发
 
 启动本地静态服务器预览：
@@ -306,6 +318,7 @@ npx http-server
 
 浏览器访问 `http://localhost:8000`。
 
+<a id="notes"></a>
 ## ⚠️ 注意事项
 
 - 确保 Google My Maps 导出的 KML 包含线路数据
@@ -313,21 +326,25 @@ npx http-server
 - 线路 `properties.type` 字段用于区分类型，未指定时默认为"待勘测"
 - 星标历史图表由 GitHub Actions 每 6 小时自动更新
 
+<a id="about"></a>
 ## 👥 关于我们
 
 **南方科技大学致诚书院"橙光"志愿服务队**
 
 我们致力于无障碍公益行动，通过实地勘测推动城市无障碍环境改善。本项目为系列督导活动提供数据可视化支持。
 
+<a id="author"></a>
 ## 👤 作者
 
 **Wayhhow**
 - GitHub: [@Wayhhow](https://github.com/Wayhhow)
 
+<a id="stars"></a>
 ## 🌟 Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Wayhhow/survey-map&type=Date)](https://star-history.com/#Wayhhow/survey-map&Date)
 
+<a id="license"></a>
 ## 📄 许可证
 
 本项目采用 [MIT 许可证](LICENSE)。

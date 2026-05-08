@@ -23,30 +23,32 @@
 
 ## 📋 Table of Contents
 
-1.  [Project Introduction](#project-introduction)
-2.  [Core Features](#core-features)
-3.  [Quick Access](#quick-access)
-4.  [Project Structure](#project-structure)
-5.  [Technology Stack](#technology-stack)
-6.  [Deployment Guide](#deployment-guide)
-7.  [Usage Guide](#usage-guide)
-    *   [Quick Start](#quick-start)
-    *   [KML Conversion Example](#kml-conversion-example)
-    *   [Configure Route Type Colors](#configure-route-type-colors)
-8.  [Beginner Guide](#beginner-guide)
-9.  [Local Development](#local-development)
+1.  [Project Introduction](#intro)
+2.  [Core Features](#features)
+3.  [Quick Access](#access)
+4.  [Project Structure](#structure)
+5.  [Technology Stack](#tech)
+6.  [Deployment Guide](#deploy)
+7.  [Usage Guide](#usage)
+    *   [Quick Start](#quickstart)
+    *   [KML Conversion Example](#kml)
+    *   [Configure Route Type Colors](#config)
+8.  [Beginner Guide](#guide)
+9.  [Local Development](#dev)
 10. [Notes](#notes)
-11. [About Us](#about-us)
+11. [About Us](#about)
 12. [Author](#author)
-13. [Star History](#star-history)
+13. [Star History](#stars)
 14. [License](#license)
 
+<a id="intro"></a>
 ## 📋 Project Introduction
 
 This project is a route visualization platform for the accessibility supervision activities of the **"Chengguang" Volunteer Service Team** at Zhicheng College, Southern University of Science and Technology. It displays supervision routes on an interactive map, supporting surveyed/to-be-surveyed route distinction, real-time length statistics, and survey detail display, providing an intuitive data management and presentation tool for accessibility facility supervision.
 
 The project is built with Leaflet.js and Amap (Gaode) tiles, hosted on GitHub Pages, and configured with GitHub Actions for automated deployment.
 
+<a id="features"></a>
 ## 🎯 Core Features
 
 - **Route Visualization**: Render all supervision routes based on Leaflet.js with zoom and pan support
@@ -56,10 +58,12 @@ The project is built with Leaflet.js and Amap (Gaode) tiles, hosted on GitHub Pa
 - **Responsive Design**: Adapted for both desktop and mobile devices, providing a consistent user experience
 - **Automated Deployment**: GitHub Actions automatically builds and deploys on pushes to the `main` branch
 
+<a id="access"></a>
 ## 🌐 Quick Access
 
 **Live Map**: [https://wayhhow.github.io/survey-map/](https://wayhhow.github.io/survey-map/)
 
+<a id="structure"></a>
 ## 📁 Project Structure
 
 ```
@@ -88,6 +92,7 @@ survey-map/
     └── star-history.yml    # Star history update workflow
 ```
 
+<a id="tech"></a>
 ## 🛠 Technology Stack
 
 | Category | Technology/Library | Purpose |
@@ -100,6 +105,7 @@ survey-map/
 | Deployment | GitHub Pages | Static site hosting |
 | CI/CD | GitHub Actions | Automated deployment and scheduled tasks |
 
+<a id="deploy"></a>
 ## 🚀 Deployment Guide
 
 ### 1. Create a GitHub Repository and Enable Pages
@@ -122,8 +128,10 @@ git push origin main
 
 GitHub Pages usually completes building and deployment within 1–2 minutes. You can then access the site at `https://your-username.github.io/survey-map`.
 
+<a id="usage"></a>
 ## 📊 Usage Guide
 
+<a id="quickstart"></a>
 ### Quick Start
 
 1. **Prepare route data**: Draw routes in [Google My Maps](https://www.google.com/maps/d/), grouped by type
@@ -131,6 +139,7 @@ GitHub Pages usually completes building and deployment within 1–2 minutes. You
 3. **Update project**: Replace `data/routes.geojson`; the conversion tool will automatically sync `data/route_details.csv`
 4. **Commit and deploy**: Push to GitHub; changes on the `main` branch trigger automatic deployment
 
+<a id="kml"></a>
 ### KML Conversion Example
 
 ```bash
@@ -146,6 +155,7 @@ node convert-kml.js input.kml data/routes.geojson
 
 The conversion process preserves manually entered data in `route_details.csv` (survey date, irregularities) and automatically adds empty records for new routes.
 
+<a id="config"></a>
 ### Configure Route Type Colors
 
 Edit `data/types.json`:
@@ -167,6 +177,7 @@ Edit `data/types.json`:
 }
 ```
 
+<a id="guide"></a>
 ## 📝 Beginner Guide: How to Update Route Data
 
 > This guide is for beginners with no prior coding experience. Follow the step-by-step instructions to update route data on the map.
@@ -292,6 +303,7 @@ Draw routes in Google My Maps → Export KML file → Run conversion script → 
 | New routes not showing on map | Wait 1–2 minutes for GitHub Pages deployment, refresh with Ctrl+F5 |
 | CSV file shows garbled text in Excel | Open with Notepad to verify content; Excel encoding issues don't affect the website |
 
+<a id="dev"></a>
 ## 👨‍💻 Local Development
 
 Start a local static server for preview:
@@ -306,6 +318,7 @@ npx http-server
 
 Visit `http://localhost:8000` in your browser.
 
+<a id="notes"></a>
 ## ⚠️ Notes
 
 - Ensure the KML exported from Google My Maps contains route data
@@ -313,21 +326,25 @@ Visit `http://localhost:8000` in your browser.
 - The `properties.type` field in route data is used to distinguish types; defaults to "ToBeSurveyed" if not specified
 - The star history chart is automatically updated every 6 hours by GitHub Actions
 
+<a id="about"></a>
 ## 👥 About Us
 
 **"Chengguang" Volunteer Service Team of Zhicheng College, Southern University of Science and Technology**
 
 We are dedicated to accessibility public welfare, promoting urban accessibility improvements through on-site surveys. This project provides data visualization support for our series of supervision activities.
 
+<a id="author"></a>
 ## 👤 Author
 
 **Wayhhow**
 - GitHub: [@Wayhhow](https://github.com/Wayhhow)
 
+<a id="stars"></a>
 ## 🌟 Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Wayhhow/survey-map&type=Date)](https://star-history.com/#Wayhhow/survey-map&Date)
 
+<a id="license"></a>
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
