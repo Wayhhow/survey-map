@@ -1,3 +1,8 @@
+/*
+Copyright © 2025 Wayhhow. All rights reserved.
+GitHub: https://github.com/Wayhhow
+Project: 橙光队无障碍督导路线可视化
+*/
 /**
  * 地图管理模块
  * 负责地图初始化、路线渲染和交互处理

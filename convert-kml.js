@@ -1,4 +1,9 @@
 #!/usr/bin/env node
+/*
+Copyright © 2025 Wayhhow. All rights reserved.
+GitHub: https://github.com/Wayhhow
+Project: 橙光队无障碍督导路线可视化
+*/
 
 const fs = require('fs');
 const path = require('path');
