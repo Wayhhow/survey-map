@@ -664,6 +664,8 @@ body {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    word-break: keep-all;
+    text-align: center;
 }
 
 .close-btn {
@@ -920,6 +922,8 @@ body {
 
     .modal-header h2 {
         font-size: var(--font-size-lg);
+        word-break: keep-all;
+        text-align: center;
     }
 
     .modal-body {
