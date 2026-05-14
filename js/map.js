@@ -310,6 +310,15 @@ class MapManager {
             panel.classList.toggle('hidden');
         });
 
+        panel.addEventListener('change', (e) => {
+            const checkbox = e.target.closest('input[type="checkbox"]');
+            if (!checkbox) return;
+            const key = checkbox.dataset.layer;
+            if (!key) return;
+            localStorage.setItem(`accessibility_layer_${key}`, checkbox.checked);
+            this.toggleAccessibilityLayer(key, checkbox.checked);
+        });
+
         if (this.map) {
             this.map.on('move', () => {
                 panel.classList.remove('hidden');
