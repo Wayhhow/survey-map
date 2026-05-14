@@ -258,7 +258,7 @@ body {
     margin-left: 4px;
 }
 
-#stats.expanded h3::after {
+#stats.collapsed h3::after {
     transform: rotate(-90deg);
 }
 
