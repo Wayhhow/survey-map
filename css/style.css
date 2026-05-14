@@ -1226,10 +1226,11 @@ body {
     }
 
     #stats {
-        bottom: 10px;
+        bottom: 55px;
         right: 5px;
         left: auto;
-        max-width: 180px;
+        max-width: none;
+        width: calc(50% - 8px);
         padding: 8px 10px;
         background: rgba(255, 255, 255, 0.85);
         border-radius: 12px;
@@ -1241,13 +1242,13 @@ body {
     }
 
     #accessibility-panel {
-        min-width: 150px;
+        min-width: auto;
         padding: 8px 10px;
         border-radius: 12px;
-        right: 5px;
-        bottom: 10px;
+        right: auto;
+        bottom: 55px;
         left: 5px;
-        width: auto;
+        width: calc(50% - 8px);
         max-width: none;
     }
 
@@ -1258,27 +1259,32 @@ body {
     }
 
     #github-link {
-        bottom: auto;
-        top: 50px;
+        bottom: 10px;
         left: 5px;
-        padding: 6px 10px;
-        max-width: 140px;
-        border-radius: 12px;
+        top: auto;
+        padding: 5px 8px;
+        max-width: none;
+        border-radius: 10px;
         background: rgba(255, 255, 255, 0.85);
-        flex-direction: column;
+        flex-direction: row;
+        gap: 8px;
     }
 
     #github-link a {
-        font-size: var(--font-size-xs);
+        font-size: 0.65rem;
+    }
+
+    #github-link .standards-link {
+        font-size: 0.65rem;
     }
 
     #github-link svg {
-        width: 18px;
-        height: 18px;
+        width: 14px;
+        height: 14px;
     }
 
     #github-link #author {
-        font-size: var(--font-size-xs);
+        font-size: 0.6rem;
     }
 
     .leaflet-control-zoom a {
@@ -1328,15 +1334,21 @@ body {
     }
 
     #stats {
-        bottom: 15px;
+        bottom: 55px;
         padding: 8px 10px;
-        max-width: 180px;
+        max-width: none;
+        width: calc(50% - 8px);
+    }
+
+    #accessibility-panel {
+        bottom: 55px;
+        width: calc(50% - 8px);
     }
 
     #github-link {
         bottom: 5px;
         padding: 4px 8px;
-        max-width: 140px;
+        max-width: none;
     }
 
     .modal-content {
