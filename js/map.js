@@ -252,10 +252,19 @@ class MapManager {
         const statsPanel = document.getElementById('stats');
         if (!statsPanel) return;
 
-        // 点击面板非类型统计区域时切换显示/隐藏
+        const statsH3 = statsPanel.querySelector('h3');
+
+        // 点击标题展开/收起
+        if (statsH3) {
+            statsH3.addEventListener('click', (e) => {
+                e.stopPropagation();
+                statsPanel.classList.toggle('collapsed');
+            });
+        }
+
+        // 点击面板（非标题、非类型统计项）切换透明度
         statsPanel.addEventListener('click', (e) => {
-            // 如果点击的是类型统计项，不执行显示/隐藏操作(由data.js处理)
-            if (e.target.closest('.type-stat-item')) {
+            if (e.target.closest('.type-stat-item') || e.target.closest('h3')) {
                 return;
             }
             statsPanel.classList.toggle('hidden');
@@ -277,6 +286,22 @@ class MapManager {
                 statsPanel.classList.remove('hidden');
             });
         }
+    }
+
+    /**
+     * 初始化无障碍设施面板功能
+     */
+    initAccessibilityPanel() {
+        const panel = document.getElementById('accessibility-panel');
+        if (!panel) return;
+
+        const h3 = panel.querySelector('h3');
+        if (!h3) return;
+
+        h3.addEventListener('click', (e) => {
+            e.stopPropagation();
+            panel.classList.toggle('collapsed');
+        });
     }
 
     /**
@@ -495,6 +520,7 @@ class MapManager {
         this.listenForDataLoad();
         this.listenForAccessibilityData();
         this.initStatsPanel();
+        this.initAccessibilityPanel();
         this.initWelcomeModal();
         this.initMapClickEvent();
         this.initCenterButton();
