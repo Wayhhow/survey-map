@@ -511,7 +511,9 @@ class MapManager {
 
     listenForAccessibilityData() {
         const checkDataLoaded = setInterval(() => {
-            if (window.dataManager.accessibilityData && Object.keys(window.dataManager.accessibilityData).length > 0) {
+            const data = window.dataManager?.accessibilityData;
+            const types = window.dataManager?.accessibilityTypes;
+            if (data && types && Object.keys(data).length === Object.keys(types).length) {
                 clearInterval(checkDataLoaded);
                 this.renderAccessibilityLayers();
             }
