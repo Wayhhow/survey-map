@@ -8,21 +8,47 @@ Project: 橙光队无障碍督导路线可视化
  * 负责地图初始化、路线渲染和交互处理
  */
 class MapManager {
-    /**
-     * 构造函数
-     */
     constructor() {
-        /**
-         * Leaflet 地图实例
-         * @type {Object|null}
-         */
         this.map = null;
-        
-        /**
-         * 当前高亮的图层(单条路线)
-         * @type {Object|null}
-         */
         this.highlightedLayer = null;
+        this.accessibilityLayers = {};
+    }
+
+    static WGS84_TO_GCJ02(lng, lat) {
+        const a = 6378245.0;
+        const ee = 0.00669342162296594323;
+        let dLat = MapManager._transformLat(lng - 105.0, lat - 35.0);
+        let dLng = MapManager._transformLng(lng - 105.0, lat - 35.0);
+        const radLat = lat / 180.0 * Math.PI;
+        let magic = Math.sin(radLat);
+        magic = 1 - ee * magic * magic;
+        const sqrtMagic = Math.sqrt(magic);
+        dLat = (dLat * 180.0) / ((a * (1 - ee)) / (magic * sqrtMagic) * Math.PI);
+        dLng = (dLng * 180.0) / (a / sqrtMagic * Math.cos(radLat) * Math.PI);
+        return [lng + dLng, lat + dLat];
+    }
+
+    static _transformLat(x, y) {
+        let ret = -100.0 + 2.0 * x + 3.0 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * Math.sqrt(Math.abs(x));
+        ret += (20.0 * Math.sin(6.0 * x * Math.PI) + 20.0 * Math.sin(2.0 * x * Math.PI)) * 2.0 / 3.0;
+        ret += (20.0 * Math.sin(y * Math.PI) + 40.0 * Math.sin(y / 3.0 * Math.PI)) * 2.0 / 3.0;
+        ret += (160.0 * Math.sin(y / 12.0 * Math.PI) + 320 * Math.sin(y * Math.PI / 30.0)) * 2.0 / 3.0;
+        return ret;
+    }
+
+    static _transformLng(x, y) {
+        let ret = 300.0 + x + 2.0 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * Math.sqrt(Math.abs(x));
+        ret += (20.0 * Math.sin(6.0 * x * Math.PI) + 20.0 * Math.sin(2.0 * x * Math.PI)) * 2.0 / 3.0;
+        ret += (20.0 * Math.sin(x * Math.PI) + 40.0 * Math.sin(x / 3.0 * Math.PI)) * 2.0 / 3.0;
+        ret += (150.0 * Math.sin(x / 12.0 * Math.PI) + 300.0 * Math.sin(x / 30.0 * Math.PI)) * 2.0 / 3.0;
+        return ret;
+    }
+
+    static convertCoords(lng, lat) {
+        if (lng >= 73.66 && lng <= 135.05 && lat >= 3.86 && lat <= 53.55) {
+            return MapManager.WGS84_TO_GCJ02(lng, lat);
+        }
+        return [lng, lat];
     }
 
     /**
@@ -324,12 +350,154 @@ class MapManager {
     /**
      * 初始化所有功能
      */
+    createAccessibilityIcon(config) {
+        return L.divIcon({
+            className: 'accessibility-marker',
+            html: `<div class="accessibility-marker-inner" style="background-color:${config.markerColor};border-color:${config.markerColor}">${config.icon}</div>`,
+            iconSize: [28, 28],
+            iconAnchor: [14, 14],
+            popupAnchor: [0, -16]
+        });
+    }
+
+    renderAccessibilityLayers() {
+        if (!this.map || !window.dataManager?.accessibilityData || !window.dataManager?.accessibilityTypes) return;
+
+        Object.entries(window.dataManager.accessibilityData).forEach(([key, geojsonData]) => {
+            const config = window.dataManager.accessibilityTypes[key];
+            if (!config || this.accessibilityLayers[key]) return;
+
+            const icon = this.createAccessibilityIcon(config);
+            const layerGroup = L.layerGroup();
+
+            if (geojsonData.features) {
+                geojsonData.features.forEach(feature => {
+                    try {
+                        if (feature.geometry.type === 'Point') {
+                            const rawLng = feature.geometry.coordinates[0];
+                            const rawLat = feature.geometry.coordinates[1];
+                            const source = feature.properties._source;
+                            let lng = rawLng, lat = rawLat;
+                            if (source !== 'amap') {
+                                const c = MapManager.convertCoords(rawLng, rawLat);
+                                lng = c[0];
+                                lat = c[1];
+                            }
+                            const marker = L.marker(
+                                [lat, lng],
+                                { icon: icon, opacity: 0.5 }
+                            );
+
+                            const name = feature.properties.name || feature.properties['name:zh'] || config.label;
+                            let popupContent = `<div class="popup-accent" style="border-top:3px solid ${config.markerColor}">`;
+                            popupContent += `<h3>${name}</h3>`;
+                            popupContent += `<p>类型: ${config.label}</p>`;
+
+                            const detailTags = ['operator', 'opening_hours', 'wheelchair', 'toilets:wheelchair', 'description', 'level', 'indoor', 'address', 'facility', 'line', 'station'];
+                            const labelMap = {
+                                operator: '运营方',
+                                opening_hours: '开放时间',
+                                wheelchair: '轮椅可达',
+                                'toilets:wheelchair': '无障碍卫生间',
+                                description: '描述',
+                                level: '楼层',
+                                indoor: '室内/室外',
+                                address: '地址',
+                                facility: '设施',
+                                line: '线路',
+                                station: '站点'
+                            };
+                            detailTags.forEach(tag => {
+                                if (feature.properties[tag]) {
+                                    popupContent += `<p>${labelMap[tag] || tag}: ${feature.properties[tag]}</p>`;
+                                }
+                            });
+
+                            const sourceLabel = feature.properties._source === 'sz_metro' ? '深圳地铁' :
+                                           feature.properties._source === 'amap' ? '高德地图' : 'OpenStreetMap';
+                            popupContent += `<p class="osm-credit">数据来源: ${sourceLabel}</p>`;
+                            popupContent += '</div>';
+                            marker.bindPopup(popupContent);
+
+                            marker.on('mouseover', function() {
+                                this.setOpacity(1.0);
+                            });
+                            marker.on('mouseout', function() {
+                                this.setOpacity(0.5);
+                            });
+                            marker.on('click', function() {
+                                this.setOpacity(1.0);
+                            });
+
+                            layerGroup.addLayer(marker);
+                        }
+                    } catch (err) {
+                        console.warn(`渲染无障碍设施要素失败: ${key}`, err);
+                    }
+                });
+            }
+
+            const savedState = localStorage.getItem(`accessibility_layer_${key}`);
+            const isVisible = savedState === 'true';
+            if (isVisible) {
+                layerGroup.addTo(this.map);
+            }
+            this.accessibilityLayers[key] = layerGroup;
+        });
+
+        console.log('无障碍设施图层渲染完成');
+    }
+
+    toggleAccessibilityLayer(key, visible) {
+        const layer = this.accessibilityLayers[key];
+        if (!layer) return;
+
+        if (visible) {
+            if (!this.map.hasLayer(layer)) {
+                layer.addTo(this.map);
+            }
+        } else {
+            if (this.map.hasLayer(layer)) {
+                this.map.removeLayer(layer);
+            }
+        }
+    }
+
+    listenForAccessibilityData() {
+        const checkDataLoaded = setInterval(() => {
+            if (window.dataManager.accessibilityData && Object.keys(window.dataManager.accessibilityData).length > 0) {
+                clearInterval(checkDataLoaded);
+                this.renderAccessibilityLayers();
+            }
+        }, 200);
+    }
+
+    initCenterButton() {
+        const centerBtn = L.control({ position: 'topleft' });
+        centerBtn.onAdd = function() {
+            const div = L.DomUtil.create('div', 'center-btn');
+            div.innerHTML = '⌂';
+            div.title = '回到中心区域';
+            div.addEventListener('click', (e) => {
+                L.DomEvent.stopPropagation(e);
+                L.DomEvent.preventDefault(e);
+                if (window.mapManager && window.mapManager.map) {
+                    window.mapManager.map.flyTo([22.5949, 114.0015], 15, { duration: 1.0 });
+                }
+            });
+            return div;
+        };
+        centerBtn.addTo(this.map);
+    }
+
     init() {
         this.initMap();
         this.listenForDataLoad();
+        this.listenForAccessibilityData();
         this.initStatsPanel();
         this.initWelcomeModal();
         this.initMapClickEvent();
+        this.initCenterButton();
     }
 }
 

@@ -536,7 +536,7 @@ body {
 }
 
 /* SVG路径上的流动虚线动画 */
-.leaflet-overlay-pane path.leaflet-interactive {
+.leaflet-overlay-pane path.route-line {
     stroke-dasharray: 12;
     animation: dashFlow 1.5s linear infinite;
     stroke-linecap: round;
@@ -1036,6 +1036,174 @@ body {
     }
 }
 
+#accessibility-panel {
+    position: fixed;
+    bottom: 20px;
+    right: 230px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    padding: var(--spacing-sm);
+    border-radius: 16px;
+    box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    z-index: 1000;
+    min-width: 180px;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-left: 3px solid #2196F3;
+    animation: slideLeft 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+    overflow: hidden;
+}
+
+#accessibility-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #2196F3, #9C27B0);
+    opacity: 0.8;
+}
+
+#accessibility-panel:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+#accessibility-panel h3 {
+    margin-bottom: var(--spacing-sm);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.02em;
+    line-height: var(--line-height-tight);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.accessibility-item {
+    margin-bottom: 4px;
+    border-radius: var(--radius-sm);
+    transition: background var(--transition-fast);
+}
+
+.accessibility-item:hover {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.accessibility-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: 4px 6px;
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    user-select: none;
+}
+
+.accessibility-toggle input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    accent-color: #2196F3;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.accessibility-icon {
+    font-size: 14px;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.accessibility-label {
+    flex: 1;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+}
+
+.accessibility-count {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    background: rgba(0, 0, 0, 0.05);
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-weight: var(--font-weight-medium);
+}
+
+.accessibility-note {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    text-align: center;
+    margin-top: var(--spacing-xs);
+    padding-top: var(--spacing-xs);
+    border-top: 1px solid var(--color-border);
+}
+
+.accessibility-marker {
+    background: none !important;
+    border: none !important;
+}
+
+.accessibility-marker-inner {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    transition: transform var(--transition-fast), opacity var(--transition-normal);
+}
+
+.accessibility-marker-inner:hover {
+    transform: scale(1.2);
+}
+
+.center-btn {
+    width: 34px;
+    height: 34px;
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    margin-top: 8px;
+}
+
+.center-btn:hover {
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--color-primary);
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+}
+
+.center-btn:active {
+    transform: scale(0.95);
+}
+
+.osm-credit {
+    font-size: var(--font-size-xs) !important;
+    color: var(--color-text-tertiary) !important;
+    margin-top: var(--spacing-sm) !important;
+    padding-top: var(--spacing-xs) !important;
+    border-top: 1px solid var(--color-border);
+    font-style: italic;
+}
+
 @media (max-width: 768px) {
     #title {
         font-size: 0.9375rem;
@@ -1058,10 +1226,10 @@ body {
     }
 
     #stats {
-        bottom: 20px;
+        bottom: 10px;
         right: 5px;
         left: auto;
-        max-width: 200px;
+        max-width: 180px;
         padding: 8px 10px;
         background: rgba(255, 255, 255, 0.85);
         border-radius: 12px;
@@ -1072,11 +1240,29 @@ body {
         box-shadow: 0 1px 2px rgba(0,0,0,0.02);
     }
 
-    #github-link {
+    #accessibility-panel {
+        min-width: 150px;
+        padding: 8px 10px;
+        border-radius: 12px;
+        right: 5px;
         bottom: 10px;
-        left: 10px;
+        left: 5px;
+        width: auto;
+        max-width: none;
+    }
+
+    .center-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 0.9rem;
+    }
+
+    #github-link {
+        bottom: auto;
+        top: 50px;
+        left: 5px;
         padding: 6px 10px;
-        max-width: 150px;
+        max-width: 140px;
         border-radius: 12px;
         background: rgba(255, 255, 255, 0.85);
         flex-direction: column;
@@ -1087,8 +1273,8 @@ body {
     }
 
     #github-link svg {
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
     }
 
     #github-link #author {
@@ -1100,6 +1286,37 @@ body {
         height: 30px !important;
         line-height: 30px !important;
         font-size: 0.875rem !important;
+    }
+
+    .leaflet-popup-content {
+        min-width: 200px;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    #stats {
+        bottom: 15px;
+        right: 5px;
+        max-width: 200px;
+        padding: 8px 12px;
+    }
+
+    #accessibility-panel {
+        bottom: 15px;
+        right: 215px;
+        min-width: 170px;
+        padding: 8px 12px;
+    }
+
+    #github-link {
+        bottom: 10px;
+        left: 10px;
+        max-width: 160px;
+    }
+
+    .center-btn {
+        width: 32px;
+        height: 32px;
     }
 }
 

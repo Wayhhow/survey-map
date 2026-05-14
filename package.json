@@ -4,7 +4,10 @@
   "description": "GitHub Pages 托管的地图网站，显示 Google My Maps 导出的线路",
   "main": "index.html",
   "scripts": {
-    "convert": "node convert-kml.js"
+    "convert": "node convert-kml.js",
+    "fetch-accessibility": "node fetch-accessibility-data.js",
+    "fetch-amap": "node fetch-amap-data.js",
+    "process-metro": "node process-metro-data.js"
   },
   "dependencies": {
     "@mapbox/togeojson": "^0.16.0",
@@ -19,5 +22,8 @@
     "kml"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "xlsx": "^0.18.5"
+  }
 }
