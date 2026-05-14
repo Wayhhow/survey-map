@@ -1122,6 +1122,7 @@ body {
     flex: 1;
     font-weight: var(--font-weight-medium);
     color: var(--color-text-primary);
+    white-space: nowrap;
 }
 
 .accessibility-count {
@@ -1230,7 +1231,7 @@ body {
         right: 5px;
         left: auto;
         max-width: none;
-        width: calc(50% - 8px);
+        width: calc(38% - 8px);
         padding: 8px 10px;
         background: rgba(255, 255, 255, 0.85);
         border-radius: 12px;
@@ -1248,8 +1249,29 @@ body {
         right: auto;
         bottom: 55px;
         left: 5px;
-        width: calc(50% - 8px);
+        width: calc(62% - 8px);
         max-width: none;
+    }
+
+    #accessibility-panel h3 {
+        font-size: var(--font-size-sm);
+        margin-bottom: 4px;
+        padding-bottom: 2px;
+    }
+
+    .accessibility-toggle {
+        gap: 3px;
+        padding: 3px 4px;
+        font-size: 0.75rem;
+    }
+
+    .accessibility-icon {
+        font-size: 12px;
+    }
+
+    .accessibility-count {
+        font-size: 0.6rem;
+        padding: 1px 4px;
     }
 
     .center-btn {
@@ -1337,12 +1359,12 @@ body {
         bottom: 55px;
         padding: 8px 10px;
         max-width: none;
-        width: calc(50% - 8px);
+        width: calc(38% - 8px);
     }
 
     #accessibility-panel {
         bottom: 55px;
-        width: calc(50% - 8px);
+        width: calc(62% - 8px);
     }
 
     #github-link {
