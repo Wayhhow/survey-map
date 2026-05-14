@@ -51,6 +51,12 @@ class DataManager {
          * @type {string|null}
          */
         this.highlightedType = null;
+
+        this.accessibilityTypes = null;
+
+        this.accessibilityData = {};
+
+        this.accessibilityStats = {};
     }
 
     /**
@@ -373,6 +379,7 @@ class DataManager {
 
         return {
             ...style,
+            className: 'route-line',
             dashArray: '10',
             lineCap: 'round'
         };
@@ -462,10 +469,101 @@ class DataManager {
      * 初始化数据加载
      * @returns {Promise<void>}
      */
+    async loadAccessibilityTypes() {
+        const cacheKey = 'accessibilityTypes';
+
+        if (this.dataCache.has(cacheKey)) {
+            this.accessibilityTypes = this.dataCache.get(cacheKey);
+            console.log('从缓存加载无障碍设施类型配置');
+            return;
+        }
+
+        try {
+            const response = await fetch('data/accessibility_types.json');
+            this.accessibilityTypes = await response.json();
+            console.log('无障碍设施类型配置加载成功:', this.accessibilityTypes);
+            this.dataCache.set(cacheKey, this.accessibilityTypes);
+        } catch (error) {
+            console.error('无障碍设施类型配置加载失败:', error);
+            this.accessibilityTypes = {};
+            this.dataCache.set(cacheKey, this.accessibilityTypes);
+        }
+    }
+
+    async loadAccessibilityData() {
+        if (!this.accessibilityTypes) return;
+
+        for (const [key, config] of Object.entries(this.accessibilityTypes)) {
+            const cacheKey = `accessibility_${key}`;
+
+            if (this.dataCache.has(cacheKey)) {
+                this.accessibilityData[key] = this.dataCache.get(cacheKey);
+                console.log(`从缓存加载无障碍设施数据: ${key}`);
+                continue;
+            }
+
+            try {
+                const response = await fetch(config.file);
+                const data = await response.json();
+                this.accessibilityData[key] = data;
+                this.accessibilityStats[key] = data.features ? data.features.length : 0;
+                console.log(`无障碍设施数据加载成功: ${key} (${this.accessibilityStats[key]} 个)`);
+                this.dataCache.set(cacheKey, data);
+            } catch (error) {
+                console.warn(`无障碍设施数据加载失败: ${key}`, error);
+                this.accessibilityData[key] = { type: 'FeatureCollection', features: [] };
+                this.accessibilityStats[key] = 0;
+                this.dataCache.set(cacheKey, this.accessibilityData[key]);
+            }
+        }
+
+        this.updateAccessibilityPanel();
+    }
+
+    updateAccessibilityPanel() {
+        const panel = document.getElementById('accessibility-panel');
+        if (!panel || !this.accessibilityTypes) return;
+
+        const listEl = document.getElementById('accessibility-list');
+        if (!listEl) return;
+
+        listEl.innerHTML = '';
+
+        Object.entries(this.accessibilityTypes).forEach(([key, config]) => {
+            const count = this.accessibilityStats[key] || 0;
+            const savedState = localStorage.getItem(`accessibility_layer_${key}`);
+            const isChecked = savedState === 'true';
+            const item = document.createElement('div');
+            item.className = 'accessibility-item';
+            item.dataset.key = key;
+            item.innerHTML = `
+                <label class="accessibility-toggle">
+                    <input type="checkbox" ${isChecked ? 'checked' : ''} data-layer="${key}">
+                    <span class="accessibility-icon">${config.icon}</span>
+                    <span class="accessibility-label">${config.label}</span>
+                    <span class="accessibility-count">${count}</span>
+                </label>
+            `;
+
+            const checkbox = item.querySelector('input[type="checkbox"]');
+            checkbox.addEventListener('change', (e) => {
+                e.stopPropagation();
+                localStorage.setItem(`accessibility_layer_${key}`, e.target.checked);
+                if (window.mapManager) {
+                    window.mapManager.toggleAccessibilityLayer(key, e.target.checked);
+                }
+            });
+
+            listEl.appendChild(item);
+        });
+    }
+
     async init() {
         await this.loadTypesConfig();
         await this.loadRouteDetails();
         await this.loadRoutesData();
+        await this.loadAccessibilityTypes();
+        await this.loadAccessibilityData();
     }
 }
 

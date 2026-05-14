@@ -55,7 +55,9 @@
 - **类型区分**：已勘测与待勘测线路以不同颜色展示，点击统计面板可高亮对应类型
 - **长度统计**：利用 Turf.js 实时计算线路总长度及各类型长度
 - **交互功能**：点击线路查看详情（名称、类型、长度、勘测日期、不规范点数量）
-- **响应式设计**：适配桌面端与移动端，提供一致的用户体验
+- **无障碍设施**：叠加显示无障碍卫生间和轮椅可达场所，数据来源 OpenStreetMap、高德地图、深圳地铁
+- **回到中心**：一键回到南科大中心区域，快速定位
+- **响应式设计**：适配桌面端、平板与移动端，提供一致的用户体验
 - **自动化部署**：推送代码至 `main` 分支后，GitHub Actions 自动构建并部署
 
 <a id="access"></a>
@@ -77,10 +79,17 @@ survey-map/
 ├── data/
 │   ├── routes.geojson      # 线路地理数据
 │   ├── route_details.csv   # 线路勘测详情
-│   └── types.json          # 类型颜色配置
+│   ├── types.json          # 类型颜色配置
+│   └── accessibility/      # 无障碍设施数据
+│       ├── wheelchair_toilets.geojson  # 无障碍卫生间
+│       ├── wheelchair_poi.geojson      # 轮椅可达场所
+│       └── metro_accessibility.geojson # 地铁站无障碍设施
 ├── image/
 │   └── logo.png            # 橙光队队徽
 ├── convert-kml.js          # KML/GeoJSON 转换工具
+├── fetch-accessibility-data.js  # OSM 无障碍数据获取脚本
+├── fetch-amap-data.js      # 高德地图 POI 数据获取脚本
+├── process-metro-data.js   # 深圳地铁数据处理脚本
 ├── package.json            # 项目依赖
 ├── README.md               # 中文文档
 ├── README.en.md            # 英文文档
@@ -303,6 +312,63 @@ Google My Maps 画线路 → 导出 KML 文件 → 运行转换脚本 → CSV �
 | 地图上没显示新线路 | 等 1–2 分钟让 GitHub Pages 重新部署，然后刷新页面（Ctrl+F5 强制刷新） |
 | CSV 文件用 Excel 打开乱码 | 用记事本打开确认内容正确，Excel 乱码不影响网站显示 |
 
+<a id="accessibility-maintenance"></a>
+## 🔄 无障碍设施数据维护
+
+### 数据来源
+
+| 来源 | 数据类型 | 坐标系 | 更新方式 |
+|------|----------|--------|----------|
+| OpenStreetMap | 无障碍卫生间、轮椅可达场所 | WGS84 | `npm run fetch-accessibility` |
+| 高德地图 POI | 无障碍卫生间、母婴室等 | GCJ-02 | `AMAP_KEY=你的key npm run fetch-amap` |
+| 深圳地铁 | 地铁站无障碍设施 | WGS84 | `npm run process-metro` |
+
+### 更新 OSM 无障碍设施数据
+
+```bash
+npm run fetch-accessibility
+```
+
+脚本会从 Overpass API 获取深圳市范围内的无障碍设施数据，自动保存到 `data/accessibility/` 目录。
+
+### 更新高德地图 POI 数据
+
+1. 在 [高德开放平台](https://lbs.amap.com/) 注册账号，创建应用获取 Web 服务 API Key（免费）
+2. 运行脚本：
+
+```bash
+# Windows PowerShell
+$env:AMAP_KEY="你的key"; npm run fetch-amap
+
+# Linux/Mac
+AMAP_KEY=你的key npm run fetch-amap
+```
+
+脚本会搜索深圳区域的无障碍卫生间、母婴室、无障碍电梯等 POI，自动与 OSM 数据合并去重。
+
+### 更新深圳地铁无障碍设施数据
+
+1. 从 [深圳政府数据开放平台](https://opendata.sz.gov.cn) 下载以下数据（CSV 格式）：
+   - "深圳地铁站点信息" → 保存为 `data/metro_stations.csv`
+   - "深圳地铁站点无障碍设施位置清单" → 保存为 `data/metro_accessibility.csv`
+   - "深圳地铁站点洗手间位置清单" → 保存为 `data/metro_toilets.csv`
+2. 运行脚本：
+
+```bash
+npm run process-metro
+```
+
+脚本会自动关联站点名称与坐标，生成 GeoJSON 并合并到现有数据中。
+
+### 坐标系说明
+
+本项目使用高德地图瓦片（GCJ-02 坐标系）。不同数据源的坐标处理方式：
+
+- **路线数据**（routes.geojson）：来自 Google My Maps 中国区，坐标已是 GCJ-02，无需转换
+- **OSM 数据**：WGS84 坐标，前端自动转换为 GCJ-02 显示
+- **高德 POI 数据**：已是 GCJ-02 坐标，无需转换
+- **地铁数据**：坐标来自 OSM（WGS84），前端自动转换
+
 <a id="dev"></a>
 ## 👨‍💻 本地开发
 
@@ -325,6 +391,9 @@ npx http-server
 - 转换后的 GeoJSON 应置于 `data/routes.geojson`
 - 线路 `properties.type` 字段用于区分类型，未指定时默认为"待勘测"
 - 星标历史图表由 GitHub Actions 每 6 小时自动更新
+- 无障碍设施数据来自 OpenStreetMap（ODbL 许可证）、高德地图和深圳地铁，需标注数据来源
+- 高德 API Key 通过环境变量 `AMAP_KEY` 传入，不要写入源码
+- 无障碍设施点位默认隐藏，用户可通过面板开关控制显示，设置保存在浏览器 localStorage
 
 <a id="about"></a>
 ## 👥 关于我们
