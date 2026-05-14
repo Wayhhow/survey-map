@@ -302,6 +302,27 @@ class MapManager {
             e.stopPropagation();
             panel.classList.toggle('collapsed');
         });
+
+        panel.addEventListener('click', (e) => {
+            if (e.target.closest('.accessibility-toggle') || e.target.closest('h3')) {
+                return;
+            }
+            panel.classList.toggle('hidden');
+        });
+
+        if (this.map) {
+            this.map.on('move', () => {
+                panel.classList.remove('hidden');
+            });
+
+            this.map.on('zoom', () => {
+                panel.classList.remove('hidden');
+            });
+
+            this.map.on('click', () => {
+                panel.classList.remove('hidden');
+            });
+        }
     }
 
     /**
