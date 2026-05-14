@@ -431,7 +431,10 @@ class DataManager {
                                 statItem.dataset.type = type;
                                 statItem.innerHTML = `
                                     <div class="type-color" style="background-color: ${color}"></div>
-                                    <span>${type}: ${length.toFixed(2)} 公里</span>
+                                    <div class="stat-content">
+                                        <div class="stat-label">${type}</div>
+                                        <div class="stat-value">${length.toFixed(2)} 公里</div>
+                                    </div>
                                 `;
 
                                 // 点击事件：按类型高亮路线
