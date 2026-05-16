@@ -55,6 +55,8 @@ The project is built with Leaflet.js and Amap (Gaode) tiles, hosted on GitHub Pa
 - **Type Distinction**: Surveyed and to-be-surveyed routes are displayed in different colors; click the stats panel to highlight the corresponding type
 - **Length Statistics**: Real-time calculation of total route length and length by type using Turf.js
 - **Interactive Features**: Click a route to view details (name, type, length, survey date, number of irregularities)
+- **Accessibility Facilities**: Overlay display of wheelchair-accessible restrooms and wheelchair-accessible venues, with data from OpenStreetMap, Amap, and Shenzhen Metro
+- **Center Reset**: One-click return to the SUSTech center area for quick positioning
 - **Responsive Design**: Adapted for both desktop and mobile devices, providing a consistent user experience
 - **Automated Deployment**: GitHub Actions automatically builds and deploys on pushes to the `main` branch
 
@@ -77,10 +79,19 @@ survey-map/
 ├── data/
 │   ├── routes.geojson      # Route geographic data
 │   ├── route_details.csv   # Route survey details
-│   └── types.json          # Type color configuration
+│   ├── types.json          # Type color configuration
+│   ├── accessibility_types.json  # Accessibility facility type configuration
+│   └── accessibility/      # Accessibility facility data
+│       ├── wheelchair_toilets.geojson  # Wheelchair-accessible restrooms
+│       ├── wheelchair_poi.geojson      # Wheelchair-accessible venues
+│       ├── amap_accessibility.geojson  # Amap POI data
+│       └── metro_accessibility.geojson # Metro station accessibility data
 ├── image/
 │   └── logo.png            # Chengguang Team logo
 ├── convert-kml.js          # KML/GeoJSON conversion tool
+├── fetch-accessibility-data.js  # OSM accessibility data fetch script
+├── fetch-amap-data.js      # Amap POI data fetch script
+├── process-metro-data.js   # Shenzhen Metro data processing script
 ├── package.json            # Project dependencies
 ├── README.md               # Chinese documentation
 ├── README.en.md            # English documentation
@@ -303,6 +314,63 @@ Draw routes in Google My Maps → Export KML file → Run conversion script → 
 | New routes not showing on map | Wait 1–2 minutes for GitHub Pages deployment, refresh with Ctrl+F5 |
 | CSV file shows garbled text in Excel | Open with Notepad to verify content; Excel encoding issues don't affect the website |
 
+<a id="accessibility-maintenance"></a>
+## 🔄 Accessibility Facility Data Maintenance
+
+### Data Sources
+
+| Source | Data Type | Coordinate System | Update Method |
+|--------|-----------|-------------------|---------------|
+| OpenStreetMap | Wheelchair-accessible restrooms, wheelchair-accessible venues | WGS84 | `npm run fetch-accessibility` |
+| Amap POI | Wheelchair-accessible restrooms, nursing rooms, etc. | GCJ-02 | `AMAP_KEY=your_key npm run fetch-amap` |
+| Shenzhen Metro | Metro station accessibility facilities | WGS84 | `npm run process-metro` |
+
+### Update OSM Accessibility Data
+
+```bash
+npm run fetch-accessibility
+```
+
+The script fetches accessibility facility data within the Shenzhen area from the Overpass API and automatically saves it to the `data/accessibility/` directory.
+
+### Update Amap POI Data
+
+1. Register an account on the [Amap Open Platform](https://lbs.amap.com/), create an application, and obtain a Web Service API Key (free)
+2. Run the script:
+
+```bash
+# Windows PowerShell
+$env:AMAP_KEY="your_key"; npm run fetch-amap
+
+# Linux/Mac
+AMAP_KEY=your_key npm run fetch-amap
+```
+
+The script searches for wheelchair-accessible restrooms, nursing rooms, accessible elevators, and other POIs in the Shenzhen area, and automatically merges and deduplicates with OSM data.
+
+### Update Shenzhen Metro Accessibility Data
+
+1. Download the following data from the [Shenzhen Open Data Platform](https://opendata.sz.gov.cn) (CSV format):
+   - "Shenzhen Metro Station Information" → save as `data/metro_stations.csv`
+   - "Shenzhen Metro Station Accessibility Facility Location List" → save as `data/metro_accessibility.csv`
+   - "Shenzhen Metro Station Restroom Location List" → save as `data/metro_toilets.csv`
+2. Run the script:
+
+```bash
+npm run process-metro
+```
+
+The script automatically associates station names with coordinates, generates GeoJSON, and merges it into existing data.
+
+### Coordinate System Notes
+
+This project uses Amap tiles (GCJ-02 coordinate system). Coordinate handling varies by data source:
+
+- **Route data** (routes.geojson): From Google My Maps China region, coordinates are already in GCJ-02, no conversion needed
+- **OSM data**: WGS84 coordinates, automatically converted to GCJ-02 on the frontend
+- **Amap POI data**: Already in GCJ-02 coordinates, no conversion needed
+- **Metro data**: Coordinates from OSM (WGS84), automatically converted on the frontend
+
 <a id="dev"></a>
 ## 👨‍💻 Local Development
 
@@ -325,6 +393,9 @@ Visit `http://localhost:8000` in your browser.
 - The converted GeoJSON should be placed at `data/routes.geojson`
 - The `properties.type` field in route data is used to distinguish types; defaults to "ToBeSurveyed" if not specified
 - The star history chart is automatically updated every 6 hours by GitHub Actions
+- Accessibility facility data is sourced from OpenStreetMap (ODbL license), Amap, and Shenzhen Metro; data sources must be credited
+- The Amap API Key is passed via the `AMAP_KEY` environment variable; do not hardcode it in source files
+- Accessibility markers are hidden by default; users can toggle visibility via the panel, and settings are saved in browser localStorage
 
 <a id="about"></a>
 ## 👥 About Us
