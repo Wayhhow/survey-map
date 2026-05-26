@@ -80,11 +80,9 @@ survey-map/
 │   ├── routes.geojson      # Route geographic data
 │   ├── route_details.csv   # Route survey details
 │   ├── types.json          # Type color configuration
-│   ├── accessibility_types.json  # Accessibility facility type configuration
 │   └── accessibility/      # Accessibility facility data
 │       ├── wheelchair_toilets.geojson  # Wheelchair-accessible restrooms
 │       ├── wheelchair_poi.geojson      # Wheelchair-accessible venues
-│       ├── amap_accessibility.geojson  # Amap POI data
 │       └── metro_accessibility.geojson # Metro station accessibility data
 ├── image/
 │   └── logo.png            # Chengguang Team logo
@@ -173,13 +171,13 @@ Edit `data/types.json`:
 
 ```json
 {
-  "Surveyed": {
+  "已勘测": {
     "color": "#4CAF50",
     "weight": 4,
     "opacity": 0.8,
     "description": "Routes that have been surveyed on-site"
   },
-  "ToBeSurveyed": {
+  "待勘测": {
     "color": "#9E9E9E",
     "weight": 4,
     "opacity": 0.8,
@@ -249,7 +247,7 @@ Edit `data/types.json`:
 
 After conversion, the `data/route_details.csv` file is automatically updated with new routes added at the bottom. However, the "Survey Date" and "Accessibility Irregularities" columns are empty and need to be filled manually.
 
-1. Open `data/route_details.csv` with **Excel** or **Notepad**
+1. Do NOT use **Excel** (may cause encoding issues), open `data/route_details.csv` with **Notepad** or a code editor
 2. You'll see a table like this:
 
    | Name | Survey Date | Accessibility Irregularities |
