@@ -69,10 +69,9 @@ class MapManager {
         }).addTo(this.map);
 
         this.map.on('zoomstart', () => { this.isZooming = true; });
-        this.map.on('zoomend', () => { this.isZooming = false; this.updateMarkerScale(); });
+        this.map.on('zoomend', () => { this.isZooming = false; });
 
         console.log('地图初始化完成');
-        this.updateMarkerScale();
     }
 
     startDashAnimation() {
@@ -439,10 +438,16 @@ class MapManager {
 
             const icon = this.createAccessibilityIcon(config);
             const layerGroup = L.markerClusterGroup({
-                maxClusterRadius: 40,
-                spiderfyOnMaxZoom: true,
+                maxClusterRadius: 80,
+                spiderfyOnMaxZoom: false,
                 showCoverageOnHover: false,
                 zoomToBoundsOnClick: true,
+                chunkedLoading: true,
+                chunkDelay: 50,
+                chunkProgress: null,
+                disableClusteringAtZoom: 18,
+                animate: false,
+                animateAddingMarkers: false,
                 iconCreateFunction: function(cluster) {
                     const count = cluster.getChildCount();
                     let size = 'small';
@@ -542,14 +547,6 @@ class MapManager {
                     countEl.innerHTML = `${countEl.textContent}<small class="marker-subcount">(${markerCount})</small>`;
                 }
             }
-        });
-    }
-
-    updateMarkerScale() {
-        const zoom = this.map.getZoom();
-        const scale = Math.max(0.5, Math.min(1.5, (zoom - 10) / 5));
-        document.querySelectorAll('.accessibility-marker-inner').forEach(el => {
-            el.style.transform = `scale(${scale})`;
         });
     }
 
