@@ -12,6 +12,9 @@ class MapManager {
         this.map = null;
         this.highlightedLayer = null;
         this.accessibilityLayers = {};
+        this.dashOffset = 0;
+        this.isZooming = false;
+        this.dashAnimationId = null;
     }
 
     static WGS84_TO_GCJ02(lng, lat) {
@@ -65,7 +68,28 @@ class MapManager {
             attribution: '高德地图'
         }).addTo(this.map);
 
+        this.map.on('zoomstart', () => { this.isZooming = true; });
+        this.map.on('zoomend', () => { this.isZooming = false; this.updateMarkerScale(); });
+
         console.log('地图初始化完成');
+        this.updateMarkerScale();
+    }
+
+    startDashAnimation() {
+        const animate = () => {
+            if (!this.isZooming) {
+                this.dashOffset -= 0.25;
+                if (window.routesLayer) {
+                    window.routesLayer.eachLayer(layer => {
+                        if (layer.setStyle) {
+                            layer.setStyle({ dashOffset: this.dashOffset });
+                        }
+                    });
+                }
+            }
+            this.dashAnimationId = requestAnimationFrame(animate);
+        };
+        animate();
     }
 
     /**
@@ -414,7 +438,23 @@ class MapManager {
             if (!config || this.accessibilityLayers[key]) return;
 
             const icon = this.createAccessibilityIcon(config);
-            const layerGroup = L.layerGroup();
+            const layerGroup = L.markerClusterGroup({
+                maxClusterRadius: 40,
+                spiderfyOnMaxZoom: true,
+                showCoverageOnHover: false,
+                zoomToBoundsOnClick: true,
+                iconCreateFunction: function(cluster) {
+                    const count = cluster.getChildCount();
+                    let size = 'small';
+                    if (count > 50) size = 'large';
+                    else if (count > 20) size = 'medium';
+                    return L.divIcon({
+                        html: `<div><span>${count}</span></div>`,
+                        className: `marker-cluster marker-cluster-${size}`,
+                        iconSize: L.point(40, 40)
+                    });
+                }
+            });
 
             if (geojsonData.features) {
                 geojsonData.features.forEach(feature => {
@@ -492,6 +532,25 @@ class MapManager {
         });
 
         console.log('无障碍设施图层渲染完成');
+
+        Object.entries(this.accessibilityLayers).forEach(([key, layer]) => {
+            const markerCount = layer.getLayers().length;
+            const item = document.querySelector(`.accessibility-item[data-key="${key}"]`);
+            if (item) {
+                const countEl = item.querySelector('.accessibility-count');
+                if (countEl && markerCount !== parseInt(countEl.textContent)) {
+                    countEl.innerHTML = `${countEl.textContent}<small class="marker-subcount">(${markerCount})</small>`;
+                }
+            }
+        });
+    }
+
+    updateMarkerScale() {
+        const zoom = this.map.getZoom();
+        const scale = Math.max(0.5, Math.min(1.5, (zoom - 10) / 5));
+        document.querySelectorAll('.accessibility-marker-inner').forEach(el => {
+            el.style.transform = `scale(${scale})`;
+        });
     }
 
     toggleAccessibilityLayer(key, visible) {
@@ -540,6 +599,7 @@ class MapManager {
 
     init() {
         this.initMap();
+        this.startDashAnimation();
         this.listenForDataLoad();
         this.listenForAccessibilityData();
         this.initStatsPanel();

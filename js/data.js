@@ -380,7 +380,7 @@ class DataManager {
         return {
             ...style,
             className: 'route-line',
-            dashArray: '10',
+            dashArray: '12',
             lineCap: 'round'
         };
     }
