@@ -27,8 +27,9 @@ const colorToType = {
     '#4CAF50': '已勘测',
     '#9E9E9E': '待勘测',
     '#F44336': '待勘测',
-    '#fbc02d': '已勘测', // 黄色
-    '#000000': '待勘测'  // 黑色
+    '#fbc02d': '已勘测',   // 黄色
+    '#f9a825': '已勘测',   // 深黄色/琥珀色
+    '#000000': '待勘测'    // 黑色
 };
 
 // 读取文件
@@ -65,6 +66,26 @@ fs.readFile(inputPath, 'utf8', (err, data) => {
                             color = '#' + color.substring(6, 8) + color.substring(4, 6) + color.substring(2, 4);
                         }
                         styles[id] = color;
+                    }
+                }
+            }
+            
+            // 解析 StyleMap 元素，将 StyleMap ID 映射到其 normal 样式的颜色
+            const styleMapElements = xml.getElementsByTagName('StyleMap');
+            for (let i = 0; i < styleMapElements.length; i++) {
+                const styleMap = styleMapElements[i];
+                const id = styleMap.getAttribute('id');
+                if (!id) continue;
+                
+                const pairs = styleMap.getElementsByTagName('Pair');
+                for (let j = 0; j < pairs.length; j++) {
+                    const key = pairs[j].getElementsByTagName('key')[0];
+                    const styleUrl = pairs[j].getElementsByTagName('styleUrl')[0];
+                    if (key && styleUrl && key.textContent === 'normal') {
+                        const refId = styleUrl.textContent.replace('#', '');
+                        if (styles[refId]) {
+                            styles[id] = styles[refId];
+                        }
                     }
                 }
             }
