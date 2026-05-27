@@ -80,6 +80,13 @@ fs.readFile(inputPath, 'utf8', (err, data) => {
                         type = colorToType[color];
                     }
                 }
+                // 回退：如果 styleUrl 匹配失败，尝试使用 stroke 颜色
+                if (type === '待勘测' && feature.properties.stroke) {
+                    const strokeColor = feature.properties.stroke.toLowerCase();
+                    if (colorToType[strokeColor]) {
+                        type = colorToType[strokeColor];
+                    }
+                }
                 feature.properties.type = type;
             });
         } else if (inputPath.endsWith('.geojson')) {
