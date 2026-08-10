@@ -411,7 +411,13 @@ npx http-server
 <a id="stars"></a>
 ## 🌟 Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=Wayhhow/survey-map&type=Date)](https://star-history.com/#Wayhhow/survey-map&Date)
+<a href="https://www.star-history.com/?repos=Wayhhow%2Fsurvey-map&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=Wayhhow/survey-map&type=date&theme=dark&legend=top-left&sealed_token=VBZFny5P0iUdeBVI8OwdZMrguZ5G76agpzY7BDMwJ3HfexeHy1xK5L-VQyjl23WVhvZZ2zUaJOPh4kVCL2ef77bm1nHPTYA4qXztMgz9HfB8yxILqREdPQ" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Wayhhow/survey-map&type=date&legend=top-left&sealed_token=VBZFny5P0iUdeBVI8OwdZMrguZ5G76agpzY7BDMwJ3HfexeHy1xK5L-VQyjl23WVhvZZ2zUaJOPh4kVCL2ef77bm1nHPTYA4qXztMgz9HfB8yxILqREdPQ" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Wayhhow/survey-map&type=date&legend=top-left&sealed_token=VBZFny5P0iUdeBVI8OwdZMrguZ5G76agpzY7BDMwJ3HfexeHy1xK5L-VQyjl23WVhvZZ2zUaJOPh4kVCL2ef77bm1nHPTYA4qXztMgz9HfB8yxILqREdPQ" />
+ </picture>
+</a>
 
 <a id="license"></a>
 ## 📄 许可证
